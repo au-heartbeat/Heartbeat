@@ -61,6 +61,7 @@ export interface ISourceControlErrorMessage
   extends Record<Exclude<TSourceControlFieldKeys, 'type'>, Record<string, string>> {
   site: {
     required: string;
+    verifyFailed: string;
   };
   token: {
     required: string;

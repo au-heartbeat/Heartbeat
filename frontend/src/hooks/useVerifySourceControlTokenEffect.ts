@@ -53,11 +53,14 @@ export const useVerifySourceControlTokenEffect = () => {
     setIsLoading(true);
     const values = getValues() as SourceControlVerifyRequestDTO;
     const response = await sourceControlClient.verifyToken(values);
+
     if (response.code === HttpStatusCode.NoContent) {
       persistReduxData(values);
       reset(sourceControlOriginal, { keepValues: true });
     } else if (response.code === AxiosRequestErrorCode.Timeout) {
       setError(fields[FieldKey.Token].key, { message: SOURCE_CONTROL_ERROR_MESSAGE.token.timeout });
+    } else if (response.code === HttpStatusCode.BadRequest) {
+      setError(fields[FieldKey.Site].key, { message: response.errorTitle });
     } else if (response.code === HttpStatusCode.Unauthorized) {
       setError(fields[FieldKey.Token].key, { message: SOURCE_CONTROL_ERROR_MESSAGE.token.unauthorized });
     } else {

@@ -1,5 +1,23 @@
 package heartbeat.service.source.github;
 
+import static heartbeat.TestFixtures.GITHUB_REPOSITORY;
+import static heartbeat.TestFixtures.GITHUB_TOKEN;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import heartbeat.client.GitHubFeignClient;
 import heartbeat.client.dto.codebase.github.Author;
 import heartbeat.client.dto.codebase.github.BranchesInfoDTO;
@@ -28,12 +46,21 @@ import heartbeat.exception.BadRequestException;
 import heartbeat.exception.InternalServerErrorException;
 import heartbeat.exception.NotFoundException;
 import heartbeat.exception.PermissionDenyException;
+import heartbeat.exception.RequestFailedException;
 import heartbeat.exception.UnauthorizedException;
 import heartbeat.service.pipeline.buildkite.CachePageService;
 import heartbeat.service.report.WorkDay;
 import heartbeat.service.report.calculator.model.FetchedData;
 import heartbeat.service.report.model.WorkInfo;
 import heartbeat.service.source.github.model.PipelineInfoOfRepository;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.net.URI;
+import java.time.ZoneId;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletionException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,33 +71,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.net.URI;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.time.ZoneId;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletionException;
-
-import static heartbeat.TestFixtures.GITHUB_REPOSITORY;
-import static heartbeat.TestFixtures.GITHUB_TOKEN;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -238,6 +238,56 @@ class GithubServiceTest {
 	}
 
 	@Test
+	void shouldThrowUnauthorizedExceptionGivenGithubReturnUnauthorizedExceptionWhenVerifyTokenWithCustomHost() {
+		String githubEmptyToken = GITHUB_TOKEN;
+		doThrow(new UnauthorizedException("Failed to get GitHub info_status: 401 UNAUTHORIZED, reason: ..."))
+			.when(gitHubFeignClient)
+			.verifyToken(any(URI.class), eq("token " + githubEmptyToken));
+
+		var exception = assertThrows(BadRequestException.class,
+				() -> githubService.verifyToken(githubEmptyToken, "https://wrong-host.github.com"));
+		assertEquals(
+				"Failed to call GitHub host is invalid: Failed to get GitHub info_status: 401 UNAUTHORIZED, reason: ...",
+				exception.getMessage());
+	}
+
+	@Test
+	void shouldThrowUnauthorizedExceptionGivenGithubReturnUnauthorizedExceptionWhenVerifyTokenWithDefaultHost() {
+		String githubEmptyToken = GITHUB_TOKEN;
+		doThrow(new UnauthorizedException("Failed to get GitHub info_status: 401 UNAUTHORIZED, reason: ..."))
+			.when(gitHubFeignClient)
+			.verifyToken(any(URI.class), eq("token " + githubEmptyToken));
+
+		var exception = assertThrows(UnauthorizedException.class,
+				() -> githubService.verifyToken(githubEmptyToken, "https://api.github.com"));
+		assertEquals("Failed to get GitHub info_status: 401 UNAUTHORIZED, reason: ...", exception.getMessage());
+	}
+
+	@Test
+	void shouldThrowBadRequestExceptionGivenGithubReturnServerErrorWhenVerifyToken() {
+		String githubEmptyToken = GITHUB_TOKEN;
+		doThrow(new RequestFailedException(500, "Server Error")).when(gitHubFeignClient)
+			.verifyToken(any(URI.class), eq("token " + githubEmptyToken));
+
+		var exception = assertThrows(BadRequestException.class,
+				() -> githubService.verifyToken(githubEmptyToken, null));
+		assertEquals(
+				"Failed to call GitHub host is invalid: Request failed with status statusCode 500, error: Server Error",
+				exception.getMessage());
+	}
+
+	@Test
+	void shouldThrowBadRequestExceptionGivenGithubReturnUnknownHostExceptionWhenVerifyToken() {
+		String githubEmptyToken = GITHUB_TOKEN;
+		doThrow(new RuntimeException(new java.net.UnknownHostException("git.realestate.com.a"))).when(gitHubFeignClient)
+			.verifyToken(any(URI.class), eq("token " + githubEmptyToken));
+
+		var exception = assertThrows(BadRequestException.class,
+				() -> githubService.verifyToken(githubEmptyToken, "https://git.realestate.com.a"));
+		assertEquals("Failed to call GitHub host is invalid: git.realestate.com.a", exception.getMessage());
+	}
+
+	@Test
 	void shouldThrowBadRequestExceptionGivenGithubReturnUnExpectedExceptionWhenVerifyBranch() {
 		String githubEmptyToken = GITHUB_TOKEN;
 		doThrow(new UnauthorizedException("Failed to get GitHub info_status: 401 UNAUTHORIZED, reason: ..."))
@@ -273,12 +323,12 @@ class GithubServiceTest {
 	}
 
 	@Test
-	void shouldThrowInternalServerErrorExceptionGivenGithubReturnCompletionExceptionWhenVerifyToken() {
+	void shouldThrowUnauthorizedExceptionGivenGithubReturnCompletionExceptionWhenVerifyToken() {
 		String githubEmptyToken = GITHUB_TOKEN;
 		doThrow(new CompletionException(new Exception("UnExpected Exception"))).when(gitHubFeignClient)
 			.verifyToken(any(URI.class), eq("token " + githubEmptyToken));
 
-		var exception = assertThrows(InternalServerErrorException.class,
+		var exception = assertThrows(UnauthorizedException.class,
 				() -> githubService.verifyToken(githubEmptyToken, null));
 		assertEquals("Failed to call GitHub with token_error: UnExpected Exception", exception.getMessage());
 	}
@@ -826,18 +876,33 @@ class GithubServiceTest {
 	}
 
 	@Test
-    void shouldThrowPermissionDenyExceptionWhenFetchCommitInfo403Forbidden() {
-        when(gitHubFeignClient.getCommitInfo(any(), anyString(), anyString(), anyString()))
-                .thenThrow(new PermissionDenyException("request forbidden"));
+	void shouldThrowPermissionDenyExceptionWhenFetchCommitInfo403Forbidden() {
+		when(
+			gitHubFeignClient.getCommitInfo(
+				any(),
+				anyString(),
+				anyString(),
+				anyString()
+			)
+		).thenThrow(new PermissionDenyException("request forbidden"));
 
-        assertThatThrownBy(() -> githubService.fetchCommitInfo("12344", "org/repo", "mockToken"))
-                .isInstanceOf(PermissionDenyException.class)
-                .hasMessageContaining("request forbidden");
-    }
+		assertThatThrownBy(() ->
+			githubService.fetchCommitInfo("12344", "org/repo", "mockToken")
+		)
+			.isInstanceOf(PermissionDenyException.class)
+			.hasMessageContaining("request forbidden");
+	}
 
 	@Test
 	void shouldThrowInternalServerErrorExceptionWhenFetchCommitInfo500Exception() {
-		when(gitHubFeignClient.getCommitInfo(any(), anyString(), anyString(), anyString())).thenReturn(null);
+		when(
+			gitHubFeignClient.getCommitInfo(
+				any(),
+				anyString(),
+				anyString(),
+				anyString()
+			)
+		).thenReturn(null);
 
 		assertThatThrownBy(() -> githubService.fetchCommitInfo("12344", "", ""))
 			.isInstanceOf(InternalServerErrorException.class)
@@ -846,7 +911,14 @@ class GithubServiceTest {
 
 	@Test
 	void shouldReturnNullWhenFetchCommitInfo404Exception() {
-		when(gitHubFeignClient.getCommitInfo(any(), anyString(), anyString(), anyString())).thenThrow(new NotFoundException(""));
+		when(
+			gitHubFeignClient.getCommitInfo(
+				any(),
+				anyString(),
+				anyString(),
+				anyString()
+			)
+		).thenThrow(new NotFoundException(""));
 
 		assertNull(githubService.fetchCommitInfo("12344", "", ""));
 	}

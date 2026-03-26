@@ -18,17 +18,17 @@ type Props = ChipProps &
 const BranchChip = ({ value, needVerify, error, updateBranchMeta, repository, errorDetail, ...props }: Props) => {
   const pending = useRef(false);
   const sourceControlFields = useAppSelector(selectSourceControl);
-  const { token: scToken, type: scType, site: scSite } = sourceControlFields;
+  const { token: sourceControlToken, type: souceControlType, site: souceControlSite } = sourceControlFields;
 
   const verifyBranch = useCallback(async () => {
     pending.current = true;
 
     const params: SourceControlInfoRequestDTO = {
-      type: scType as SourceControlTypes,
-      token: scToken,
+      type: souceControlType as SourceControlTypes,
+      token: sourceControlToken,
       branch: value,
       repository: repository!,
-      site: scSite,
+      site: souceControlSite,
     };
     const response = await sourceControlClient.verifyBranch(params);
 
@@ -39,7 +39,7 @@ const BranchChip = ({ value, needVerify, error, updateBranchMeta, repository, er
     }
 
     pending.current = false;
-  }, [repository, scToken, scType, scSite, updateBranchMeta, value]);
+  }, [repository, sourceControlToken, souceControlType, souceControlSite, updateBranchMeta, value]);
 
   const handleRetry = useCallback(async () => {
     updateBranchMeta!({ value, needVerify: true });

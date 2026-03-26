@@ -1,5 +1,7 @@
 package heartbeat.service.source.github;
 
+import static java.util.Optional.ofNullable;
+
 import heartbeat.client.GitHubFeignClient;
 import heartbeat.client.dto.codebase.github.BranchesInfoDTO;
 import heartbeat.client.dto.codebase.github.CommitInfo;
@@ -24,6 +26,7 @@ import heartbeat.exception.BaseException;
 import heartbeat.exception.InternalServerErrorException;
 import heartbeat.exception.NotFoundException;
 import heartbeat.exception.PermissionDenyException;
+import heartbeat.exception.RequestFailedException;
 import heartbeat.exception.UnauthorizedException;
 import heartbeat.service.pipeline.buildkite.CachePageService;
 import heartbeat.service.report.WorkDay;
@@ -33,13 +36,6 @@ import heartbeat.service.source.github.model.PipelineInfoOfRepository;
 import heartbeat.service.source.github.model.PullRequestFinishedInfo;
 import heartbeat.util.GithubUtil;
 import jakarta.annotation.PreDestroy;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Service;
-
 import java.net.URI;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -52,8 +48,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
-
-import static java.util.Optional.ofNullable;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -120,11 +120,23 @@ public class GitHubService {
 		catch (RuntimeException e) {
 			Throwable cause = ofNullable(e.getCause()).orElse(e);
 			log.error("Failed to call GitHub with token_error: {} ", cause.getMessage());
-			if (cause instanceof BaseException baseException) {
-				throw baseException;
+			if (cause instanceof UnauthorizedException) {
+				if (site != null && !site.equals(getDefaultGitHubSite())) {
+					throw new BadRequestException(
+							String.format("Failed to call GitHub host is invalid: %s", cause.getMessage()));
+				}
+				else {
+					throw (UnauthorizedException) cause;
+				}
 			}
-			throw new InternalServerErrorException(
-					String.format("Failed to call GitHub with token_error: %s", cause.getMessage()));
+			else if (cause instanceof RequestFailedException || cause instanceof java.net.UnknownHostException) {
+				throw new BadRequestException(
+						String.format("Failed to call GitHub host is invalid: %s", cause.getMessage()));
+			}
+			else {
+				throw new UnauthorizedException(
+						String.format("Failed to call GitHub with token_error: %s", cause.getMessage()));
+			}
 		}
 	}
 
@@ -203,7 +215,6 @@ public class GitHubService {
 			throw new InternalServerErrorException(
 					String.format("Failed to get pipeline leadTimes, cause is: %s", cause.getMessage()));
 		}
-
 	}
 
 	private List<CompletableFuture<LeadTime>> getLeadTimeFutures(String realToken, PipelineInfoOfRepository item,

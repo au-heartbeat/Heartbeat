@@ -75,6 +75,7 @@ export const PIPELINE_TOOL_ERROR_MESSAGE: IPipelineToolErrorMessage = {
 export const SOURCE_CONTROL_ERROR_MESSAGE: ISourceControlErrorMessage = {
   site: {
     required: 'GitHub host is required!',
+    verifyFailed: 'GitHub host is incorrect!',
   },
   token: {
     required: 'Token is required!',

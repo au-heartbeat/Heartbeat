@@ -548,6 +548,7 @@ export const PIPELINE_TOOL_RETRY_MESSAGE = 'Data loading failed, please';
 export const PIPELINE_TOOL_RETRY_TRIGGER_MESSAGE = ' try again';
 
 export const SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT_MAPPING: Record<string, string> = {
+  '400': 'GitHub host is incorrect!',
   '401': 'Token is incorrect!',
 };
 

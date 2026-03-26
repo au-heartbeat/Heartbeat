@@ -1,9 +1,10 @@
 import { useVerifySourceControlTokenEffect } from '@src/hooks/useVerifySourceControlTokenEffect';
 import { sourceControlDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { MOCK_PIPELINE_VERIFY_UNAUTHORIZED_TEXT, UNKNOWN_ERROR_TEXT } from '../fixtures';
+import { SOURCE_CONTROL_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
+import { SourceControlTypes, AxiosRequestErrorCode } from '@src/constants/resources';
 import { sourceControlSchema } from '@src/containers/ConfigStep/Form/schema';
-import { AxiosRequestErrorCode } from '@src/constants/resources';
 import { FormProvider } from '@test/utils/FormProvider';
 import { setupStore } from '../utils/setupStoreUtil';
 import { renderHook } from '@testing-library/react';
@@ -68,6 +69,15 @@ describe('use verify sourceControl token', () => {
   const errorScenarios = [
     {
       mock: {
+        code: HttpStatusCode.BadRequest,
+        errorTitle: 'GitHub host is incorrect!',
+      },
+      field: 'site',
+      status: '400',
+      message: 'GitHub host is incorrect!',
+    },
+    {
+      mock: {
         code: HttpStatusCode.Unauthorized,
         errorTitle: MOCK_PIPELINE_VERIFY_UNAUTHORIZED_TEXT,
       },
@@ -106,6 +116,38 @@ describe('use verify sourceControl token', () => {
       expect(setErrorSpy).toHaveBeenCalledWith(field, { message });
     },
   );
+
+  it('should set site and token error messages when verifying GitHubEnterprise token fails', async () => {
+    const HookWrapperWithEnterprise = ({ children }: { children: ReactNode }) => {
+      const store = setupStore();
+      return (
+        <Provider store={store}>
+          <FormProvider
+            defaultValues={{ ...sourceControlDefaultValues, type: SourceControlTypes.GitHubEnterprise }}
+            schema={sourceControlSchema}
+          >
+            {children}
+          </FormProvider>
+        </Provider>
+      );
+    };
+
+    sourceControlClient.verifyToken = jest.fn().mockResolvedValue({
+      code: HttpStatusCode.Unauthorized,
+      errorTitle: MOCK_PIPELINE_VERIFY_UNAUTHORIZED_TEXT,
+    });
+
+    const { result } = renderHook(useVerifySourceControlTokenEffect, { wrapper: HookWrapperWithEnterprise });
+
+    await result.current.verifyToken();
+
+    expect(setErrorSpy).toHaveBeenCalledWith('token', {
+      message: SOURCE_CONTROL_ERROR_MESSAGE.token.unauthorized,
+    });
+    expect(setErrorSpy).toHaveBeenCalledWith('site', {
+      message: SOURCE_CONTROL_ERROR_MESSAGE.site.verifyFailed,
+    });
+  });
 
   it('should clear all verified error messages when call resetFeilds', async () => {
     const { result } = setup();
