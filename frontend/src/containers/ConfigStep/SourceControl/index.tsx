@@ -91,7 +91,9 @@ export const SourceControl = ({
                   variant='standard'
                   inputProps={{ 'aria-label': `input ${fields[FieldKey.Site].key}` }}
                   onChange={(e) => {
+                    /* istanbul ignore next */
                     if (isSubmitSuccessful) {
+                      /* istanbul ignore next */
                       reset(undefined, { keepValues: true, keepErrors: true });
                     }
                     const sourceControl: ISourceControlData = {

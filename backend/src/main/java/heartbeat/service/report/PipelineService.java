@@ -13,17 +13,16 @@ import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.service.pipeline.buildkite.BuildKiteService;
 import heartbeat.service.report.calculator.model.FetchedData;
 import heartbeat.service.source.github.GitHubService;
-import lombok.AllArgsConstructor;
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 @AllArgsConstructor
