@@ -2,7 +2,7 @@ import { ReworkDialog } from '@src/containers/MetricsStep/ReworkSettings/ReworkD
 import { CONFIRM, NEXT, PREVIOUS, REWORK_DIALOG_NOTE } from '@test/fixtures';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react/index';
+import React from 'react';
 
 const mockHiddenDialog = jest.fn();
 describe('ReworkDialog', () => {

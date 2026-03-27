@@ -6,8 +6,8 @@ import {
 } from '@src/context/Metrics/metricsSlice';
 import { TypedStyledAutocompleted, ITargetFieldType } from '@src/components/Common/MultiAutoComplete/styles';
 import { Checkbox, createFilterOptions, FilterOptionsState, TextField } from '@mui/material';
-import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle';
 import { WarningNotification } from '@src/components/Common/WarningNotification';
+import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle';
 import { FormGroupWrapper } from '@src/components/Common/FormGroupWrapper';
 import NewFunctionsLabel from '@src/components/Common/NewFunctionsLabel';
 import { formatDuplicatedNameWithSuffix } from '@src/utils/util';

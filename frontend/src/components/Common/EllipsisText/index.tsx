@@ -4,7 +4,6 @@ import React from 'react';
 interface IEllipsisTextProps {
   children: React.ReactNode;
   fitContent: boolean;
-  ref: React.ForwardedRef<HTMLParagraphElement>;
 }
 
 export default React.forwardRef<HTMLParagraphElement, IEllipsisTextProps>(function RefWrapper(

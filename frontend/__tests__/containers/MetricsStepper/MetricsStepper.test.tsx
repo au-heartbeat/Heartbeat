@@ -37,8 +37,8 @@ import { HttpResponse, http } from 'msw';
 import { Provider } from 'react-redux';
 import { setupServer } from 'msw/node';
 import { HttpStatusCode } from 'axios';
-import dayjs from 'dayjs';
 import React from 'react';
+import dayjs from 'dayjs';
 
 const START_DATE_LABEL = 'From';
 const TODAY = dayjs();

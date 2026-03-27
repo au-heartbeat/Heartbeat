@@ -3,8 +3,8 @@ import { UnauthorizedError } from '@src/errors/UnauthorizedError';
 import { BadRequestError } from '@src/errors/BadRequestError';
 import { ForbiddenError } from '@src/errors/ForbiddenError';
 import { NotFoundError } from '@src/errors/NotFoundError';
-import { TimeoutError } from '@src/errors/TimeoutError';
 import { UnknownError } from '@src/errors/UnknownError';
+import { TimeoutError } from '@src/errors/TimeoutError';
 
 export const isAppError = (o: unknown) =>
   [

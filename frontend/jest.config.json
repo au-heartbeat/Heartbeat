@@ -1,14 +1,16 @@
 {
   "transform": {
     "^.+\\.tsx?$": "ts-jest",
+    "^.+\\.m?js$": "ts-jest",
     ".+\\.svg": "<rootDir>/__tests__/__mocks__/svgTransformer.ts"
   },
+  "transformIgnorePatterns": [],
   "globalSetup": "./global-setup.ts",
   "setupFiles": ["./jest.polyfills.ts"],
   "setupFilesAfterEnv": ["<rootDir>/__tests__/setupTests.ts"],
   "testEnvironment": "jsdom",
   "testRegex": "/__tests__/.*(test|spec)\\.(jsx?|tsx?|ts?)$",
-  "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
+  "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node", "mjs"],
   "moduleNameMapper": {
     "\\.(css|less|scss|sass)$": "identity-obj-proxy",
     "^@src/(.*)": "<rootDir>/src/$1",

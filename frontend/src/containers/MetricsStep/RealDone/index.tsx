@@ -4,8 +4,8 @@ import {
   selectMetricsContent,
   selectRealDoneWarningMessage,
 } from '@src/context/Metrics/metricsSlice';
-import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle';
 import { WarningNotification } from '@src/components/Common/WarningNotification';
+import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle';
 import MultiAutoComplete from '@src/components/Common/MultiAutoComplete';
 import { WarningMessage } from '@src/containers/MetricsStep/Crews/style';
 import { METRICS_CONSTANTS } from '@src/constants/resources';
