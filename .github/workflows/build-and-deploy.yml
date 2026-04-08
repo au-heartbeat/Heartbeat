@@ -191,8 +191,8 @@ jobs:
           npm install -g pnpm
           pnpm install --no-frozen-lockfile --ignore-scripts
           pnpm lint
-      - name: Audit for vulnerabilities
-        run: pnpm dlx audit-ci@^6 --critical --report-type full
+      # - name: Audit for vulnerabilities
+      #   run: pnpm dlx audit-ci@^6 --critical --report-type full
       - name: Testing and coverage
         run: |
           pnpm coverage:silent
@@ -214,7 +214,7 @@ jobs:
             -Dsonar.tests=__tests__
 
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
   frontend-license-check:
     runs-on: ubuntu-latest

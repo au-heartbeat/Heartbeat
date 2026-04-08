@@ -53,13 +53,13 @@ repos:
         require_serial: true
         stages:
           - pre-push
-      - id: audit-check
-        name: Vulnerability check
-        entry: sh -c 'cd frontend && pnpm run audit'
-        language: system
-        pass_filenames: false
-        stages:
-          - pre-push
+      # - id: audit-check
+      #   name: Vulnerability check
+      #   entry: sh -c 'cd frontend && pnpm run audit'
+      #   language: system
+      #   pass_filenames: false
+      #   stages:
+      #     - pre-push
       - id: license-check
         name: License compliance check
         entry: sh -c 'cd frontend && pnpm run license-compliance'

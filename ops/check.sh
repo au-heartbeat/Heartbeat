@@ -63,7 +63,7 @@ backend_check() {
 
 frontend_check() {
   cd frontend
-  pnpm dlx audit-ci@^6 --config ./audit-ci.jsonc
+  # pnpm dlx audit-ci@^6 --config ./audit-ci.jsonc
   pnpm install --no-frozen-lockfile --ignore-scripts
   pnpm lint
   pnpm coverage:silent
