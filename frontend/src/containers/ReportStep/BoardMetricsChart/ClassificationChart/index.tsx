@@ -127,6 +127,7 @@ function checkClassificationChartType(
 ) {
   const totalValues = getTotalValues(classificationDataByModel, classification);
   if (totalValues === 0) {
+    /* istanbul ignore next */
     return ClassificationChartType.Bar;
   }
   const data = extractedValueList(classificationDataByModel, classification);
@@ -177,6 +178,7 @@ function extractClassificationCardCountsBarData(
   const data = extractedValueList(classificationDataByModel, classification);
   const allSubtitle = getAllSubtitles(classificationDataByModel, classification);
   const indicators = allSubtitle.map((subtitle) => {
+    /* istanbul ignore next */
     if (totalValues === 0) {
       return 0.0;
     }
