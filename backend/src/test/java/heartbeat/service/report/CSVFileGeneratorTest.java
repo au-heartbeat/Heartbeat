@@ -107,11 +107,12 @@ class CSVFileGeneratorTest {
 		void shouldConvertPipelineDataToCsvGivenCommitInfoNotNull(List<PipelineCSVInfo> pipelineCSVInfos,
 				String[] respectedData) {
 			String[][] expectedSavedData = new String[][] { { "Organization", "Pipeline Name", "Repo Name",
-					"Pipeline Step", "Valid", "Build Number", "Pull Number", "Code Committer", "Build Creator",
-					"First Code Committed Time In PR", "PR Created Time", "PR Merged Time", "No PR Committed Time",
-					"Job Start Time", "Pipeline Start Time", "Pipeline Finish Time", "Non-Workdays (Hours)",
-					"Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)", "Pipeline Lead Time (HH:mm:ss)", "Status",
-					"Branch", "Revert" }, respectedData };
+					"Pipeline Step", "Valid", "Build Number", "Pull Number", "Pipeline Title", "PR Title",
+					"Code Committer", "Build Creator", "First Code Committed Time In PR", "PR Created Time",
+					"PR Merged Time", "No PR Committed Time", "Job Start Time", "Pipeline Start Time",
+					"Pipeline Finish Time", "Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)",
+					"PR Lead Time (HH:mm:ss)", "Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
+					respectedData };
 			csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
 			verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
@@ -122,15 +123,15 @@ class CSVFileGeneratorTest {
 			List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_CREATOR_NAME();
 			String[][] expectedSavedData = new String[][] {
 					{ "Organization", "Pipeline Name", "Repo Name", "Pipeline Step", "Valid", "Build Number",
-							"Pull Number", "Code Committer", "Build Creator", "First Code Committed Time In PR",
-							"PR Created Time", "PR Merged Time", "No PR Committed Time", "Job Start Time",
-							"Pipeline Start Time", "Pipeline Finish Time", "Non-Workdays (Hours)",
-							"Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)", "Pipeline Lead Time (HH:mm:ss)",
-							"Status", "Branch", "Revert" },
+							"Pull Number", "Pipeline Title", "PR Title", "Code Committer", "Build Creator",
+							"First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
+							"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
+							"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+							"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
 					{ "Thoughtworks-Heartbeat", "Heartbeat", null, ":rocket: Deploy prod", null, "880", null, null,
-							null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000",
-							"168369327000", "1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch",
-							"" } };
+							null, null, null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
+							"168369327000", "168369327000", "1684793037000", "240", "8379303", "16837", "653037000",
+							"passed", "branch", "" } };
 
 			csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
@@ -142,15 +143,15 @@ class CSVFileGeneratorTest {
 			List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITH_NULL_COMMIT_INFO();
 			String[][] expectedSavedData = new String[][] {
 					{ "Organization", "Pipeline Name", "Repo Name", "Pipeline Step", "Valid", "Build Number",
-							"Pull Number", "Code Committer", "Build Creator", "First Code Committed Time In PR",
-							"PR Created Time", "PR Merged Time", "No PR Committed Time", "Job Start Time",
-							"Pipeline Start Time", "Pipeline Finish Time", "Non-Workdays (Hours)",
-							"Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)", "Pipeline Lead Time (HH:mm:ss)",
-							"Status", "Branch", "Revert" },
+							"Pull Number", "Pipeline Title", "PR Title", "Code Committer", "Build Creator",
+							"First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
+							"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
+							"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+							"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
 					{ "Thoughtworks-Heartbeat", "Heartbeat", "test-repo", ":rocket: Deploy prod", "true", "880", null,
-							"XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000",
-							"168369327000", "1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch",
-							"" } };
+							null, null, "XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
+							"168369327000", "168369327000", "1684793037000", "240", "8379303", "16837", "653037000",
+							"passed", "branch", "" } };
 
 			csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
@@ -162,15 +163,15 @@ class CSVFileGeneratorTest {
 			List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITH_MESSAGE_IS_REVERT();
 			String[][] expectedSavedData = new String[][] {
 					{ "Organization", "Pipeline Name", "Repo Name", "Pipeline Step", "Valid", "Build Number",
-							"Pull Number", "Code Committer", "Build Creator", "First Code Committed Time In PR",
-							"PR Created Time", "PR Merged Time", "No PR Committed Time", "Job Start Time",
-							"Pipeline Start Time", "Pipeline Finish Time", "Non-Workdays (Hours)",
-							"Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)", "Pipeline Lead Time (HH:mm:ss)",
-							"Status", "Branch", "Revert" },
+							"Pull Number", "Pipeline Title", "PR Title", "Code Committer", "Build Creator",
+							"First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
+							"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
+							"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+							"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
 					{ "Thoughtworks-Heartbeat", "Heartbeat", "test-repo", ":rocket: Deploy prod", null, "880", null,
-							"XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000",
-							"168369327000", "1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch",
-							"true" } };
+							null, null, "XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
+							"168369327000", "168369327000", "1684793037000", "240", "8379303", "16837", "653037000",
+							"passed", "branch", "true" } };
 
 			csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
@@ -182,15 +183,15 @@ class CSVFileGeneratorTest {
 			List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_Author_NAME();
 			String[][] expectedSavedData = new String[][] {
 					{ "Organization", "Pipeline Name", "Repo Name", "Pipeline Step", "Valid", "Build Number",
-							"Pull Number", "Code Committer", "Build Creator", "First Code Committed Time In PR",
-							"PR Created Time", "PR Merged Time", "No PR Committed Time", "Job Start Time",
-							"Pipeline Start Time", "Pipeline Finish Time", "Non-Workdays (Hours)",
-							"Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)", "Pipeline Lead Time (HH:mm:ss)",
-							"Status", "Branch", "Revert" },
+							"Pull Number", "Pipeline Title", "PR Title", "Code Committer", "Build Creator",
+							"First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
+							"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
+							"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+							"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
 					{ "Thoughtworks-Heartbeat", "Heartbeat", "test-repo", ":rocket: Deploy prod", null, "880", null,
-							null, "XXX", "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000",
-							"168369327000", "1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch",
-							"" } };
+							null, null, null, "XXX", "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
+							"168369327000", "168369327000", "1684793037000", "240", "8379303", "16837", "653037000",
+							"passed", "branch", "" } };
 
 			csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
@@ -203,23 +204,23 @@ class CSVFileGeneratorTest {
 
 			String[][] expectedSavedData = new String[][] {
 					{ "Organization", "Pipeline Name", "Repo Name", "Pipeline Step", "Valid", "Build Number",
-							"Pull Number", "Code Committer", "Build Creator", "First Code Committed Time In PR",
-							"PR Created Time", "PR Merged Time", "No PR Committed Time", "Job Start Time",
-							"Pipeline Start Time", "Pipeline Finish Time", "Non-Workdays (Hours)",
-							"Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)", "Pipeline Lead Time (HH:mm:ss)",
-							"Status", "Branch", "Revert" },
+							"Pull Number", "Pipeline Title", "PR Title", "Code Committer", "Build Creator",
+							"First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
+							"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
+							"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+							"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
 					{ "Thoughtworks-Heartbeat", "Heartbeat", "test-repo", ":rocket: Deploy prod", "true", "880", "1",
-							"test-committer", "XXXX", "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
+							null, null, "test-committer", "XXXX", "2023-05-08T07:18:18Z", "168369327000",
+							"1683793037000", null, "168369327000", "168369327000", "1684793037000", "240", "8379303",
+							"16837", "653037000", "passed", "branch", "" },
+					{ "Thoughtworks-Heartbeat", "Heartbeat", "test-repo", ":rocket: Deploy prod", "true", "880", null,
+							null, null, "XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
 							"168369327000", "168369327000", "1684793037000", "240", "8379303", "16837", "653037000",
 							"passed", "branch", "" },
-					{ "Thoughtworks-Heartbeat", "Heartbeat", "test-repo", ":rocket: Deploy prod", "true", "880", null,
-							"XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000",
-							"168369327000", "1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch",
-							"" },
 					{ "Thoughtworks-Foxtel", "Heartbeat1", "test-repo", ":rocket: Deploy prod", "true", "880", null,
-							null, "XXXX", "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000",
-							"168369327000", "1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch",
-							"" } };
+							null, null, null, "XXXX", "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
+							"168369327000", "168369327000", "1684793037000", "240", "8379303", "16837", "653037000",
+							"passed", "branch", "" } };
 
 			csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
@@ -230,19 +231,19 @@ class CSVFileGeneratorTest {
 			return Stream.of(
 					Arguments.of(PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA(),
 							new String[] { "Thoughtworks-Heartbeat", "Heartbeat", "test-repo", ":rocket: Deploy prod",
-									"true", "880", "1", "XXXX", null, "2023-05-08T07:18:18Z", "168369327000",
-									"1683793037000", null, "168369327000", "168369327000", "1684793037000", "240",
-									"8379303", "16837", "653037000", "passed", "branch", "" }),
+									"true", "880", "1", null, null, "XXXX", null, "2023-05-08T07:18:18Z",
+									"168369327000", "1683793037000", null, "168369327000", "168369327000",
+									"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" }),
 					Arguments.of(PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITH_PIPELINE_STATUS_IS_CANCELED(),
 							new String[] { "Thoughtworks-Heartbeat", "Heartbeat", null, ":rocket: Deploy prod", "true",
-									"880", null, "XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000",
-									null, "168369327000", "168369327000", "1684793037000", "240", "8379303", "16837",
-									"653037000", "canceled", "branch", "" }),
+									"880", null, null, null, "XXXX", null, "2023-05-08T07:18:18Z", "168369327000",
+									"1683793037000", null, "168369327000", "168369327000", "1684793037000", "240",
+									"8379303", "16837", "653037000", "canceled", "branch", "" }),
 					Arguments.of(PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_CREATOR(),
 							new String[] { "Thoughtworks-Heartbeat", "Heartbeat", null, ":rocket: Deploy prod", null,
-									"880", null, "XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000",
-									null, "1683793037000", "168369327000", "1684793037000", "240", "8379303", "16837",
-									"653037000", "passed", "branch", "" }));
+									"880", null, null, null, "XXXX", null, "2023-05-08T07:18:18Z", "168369327000",
+									"1683793037000", null, "1683793037000", "168369327000", "1684793037000", "240",
+									"8379303", "16837", "653037000", "passed", "branch", "" }));
 		}
 
 	}

@@ -16,6 +16,12 @@ public class LeadTime {
 
 	private String committer;
 
+	@Nullable
+	private String pipelineTitle;
+
+	@Nullable
+	private String prTitle;
+
 	private Integer pullNumber;
 
 	@Nullable

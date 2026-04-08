@@ -4,6 +4,7 @@ import static java.util.Optional.ofNullable;
 
 import heartbeat.client.GitHubFeignClient;
 import heartbeat.client.dto.codebase.github.BranchesInfoDTO;
+import heartbeat.client.dto.codebase.github.Commit;
 import heartbeat.client.dto.codebase.github.CommitInfo;
 import heartbeat.client.dto.codebase.github.LeadTime;
 import heartbeat.client.dto.codebase.github.OrganizationsInfoDTO;
@@ -80,9 +81,7 @@ public class GitHubService {
 	private String defaultGitHubSite;
 
 	private String getDefaultGitHubSite() {
-		return ofNullable(defaultGitHubSite)
-			.filter(it -> !it.isBlank())
-			.orElse("https://api.github.com");
+		return ofNullable(defaultGitHubSite).filter(it -> !it.isBlank()).orElse("https://api.github.com");
 	}
 
 	private String normalizeSite(String site) {
@@ -90,10 +89,7 @@ public class GitHubService {
 		if (normalizedSite.isEmpty()) {
 			return getDefaultGitHubSite();
 		}
-		if (
-			!normalizedSite.startsWith("http://") &&
-			!normalizedSite.startsWith("https://")
-		) {
+		if (!normalizedSite.startsWith("http://") && !normalizedSite.startsWith("https://")) {
 			normalizedSite = "https://" + normalizedSite;
 		}
 		normalizedSite = normalizedSite.replaceAll("/+$", "");
@@ -121,366 +117,194 @@ public class GitHubService {
 			log.info("Start to request github with token");
 			gitHubFeignClient.verifyToken(resolveSiteUri(site), token);
 			log.info("Successfully verify token from github");
-		} catch (RuntimeException e) {
+		}
+		catch (RuntimeException e) {
 			Throwable cause = ofNullable(e.getCause()).orElse(e);
-			log.error(
-				"Failed to call GitHub with token_error: {} ",
-				cause.getMessage()
-			);
+			log.error("Failed to call GitHub with token_error: {} ", cause.getMessage());
 			if (cause instanceof UnauthorizedException) {
 				if (site != null && site.equals(getDefaultGitHubSite())) {
 					throw new BadRequestException(
-						String.format(
-							"Failed to call GitHub host is invalid: %s",
-							cause.getMessage()
-						)
-					);
-				} else {
+							String.format("Failed to call GitHub host is invalid: %s", cause.getMessage()));
+				}
+				else {
 					throw (UnauthorizedException) cause;
 				}
-			} else if (
-				cause instanceof RequestFailedException ||
-				cause instanceof java.net.UnknownHostException
-			) {
+			}
+			else if (cause instanceof RequestFailedException || cause instanceof java.net.UnknownHostException) {
 				throw new BadRequestException(
-					String.format(
-						"Failed to call GitHub host is invalid: %s",
-						cause.getMessage()
-					)
-				);
-			} else {
+						String.format("Failed to call GitHub host is invalid: %s", cause.getMessage()));
+			}
+			else {
 				throw new UnauthorizedException(
-					String.format(
-						"Failed to call GitHub with token_error: %s",
-						cause.getMessage()
-					)
-				);
+						String.format("Failed to call GitHub with token_error: %s", cause.getMessage()));
 			}
 		}
 	}
 
-	public void verifyCanReadTargetBranch(
-		String repository,
-		String branch,
-		String githubToken,
-		String site
-	) {
+	public void verifyCanReadTargetBranch(String repository, String branch, String githubToken, String site) {
 		try {
 			String token = TOKEN_TITLE + githubToken;
 			URI uri = resolveSiteUri(site);
 			String fullName = GithubUtil.getGithubUrlFullName(repository);
-			log.info(
-				"Start to request github branch: {}, uri: {}, repository: {}",
-				branch,
-				uri,
-				fullName
-			);
-			gitHubFeignClient.verifyCanReadTargetBranch(
-				uri,
-				fullName,
-				branch,
-				token
-			);
-			log.info(
-				"Successfully verify target branch for github, branch: {}",
-				branch
-			);
-		} catch (NotFoundException e) {
-			log.error(
-				"Failed to call GitHub with branch: {}, error: {} ",
-				branch,
-				e.getMessage()
-			);
-			throw new NotFoundException(
-				String.format("Unable to read target branch: %s", branch)
-			);
-		} catch (PermissionDenyException e) {
-			log.error(
-				"Failed to call GitHub token access error, error: {} ",
-				e.getMessage()
-			);
-			throw new UnauthorizedException(
-				"Unable to read target organization"
-			);
-		} catch (UnauthorizedException e) {
-			log.error(
-				"Failed to call GitHub with token_error: {}, error: {} ",
-				branch,
-				e.getMessage()
-			);
-			throw new BadRequestException(
-				String.format(
-					"Unable to read target branch: %s, with token error",
-					branch
-				)
-			);
-		} catch (RuntimeException e) {
+			log.info("Start to request github branch: {}, uri: {}, repository: {}", branch, uri, fullName);
+			gitHubFeignClient.verifyCanReadTargetBranch(uri, fullName, branch, token);
+			log.info("Successfully verify target branch for github, branch: {}", branch);
+		}
+		catch (NotFoundException e) {
+			log.error("Failed to call GitHub with branch: {}, error: {} ", branch, e.getMessage());
+			throw new NotFoundException(String.format("Unable to read target branch: %s", branch));
+		}
+		catch (PermissionDenyException e) {
+			log.error("Failed to call GitHub token access error, error: {} ", e.getMessage());
+			throw new UnauthorizedException("Unable to read target organization");
+		}
+		catch (UnauthorizedException e) {
+			log.error("Failed to call GitHub with token_error: {}, error: {} ", branch, e.getMessage());
+			throw new BadRequestException(String.format("Unable to read target branch: %s, with token error", branch));
+		}
+		catch (RuntimeException e) {
 			Throwable cause = ofNullable(e.getCause()).orElse(e);
-			log.error(
-				"Failed to call GitHub branch:{} with error: {} ",
-				branch,
-				cause.getMessage()
-			);
+			log.error("Failed to call GitHub branch:{} with error: {} ", branch, cause.getMessage());
 			if (cause instanceof BaseException baseException) {
 				throw baseException;
 			}
 			throw new InternalServerErrorException(
-				String.format(
-					"Failed to call GitHub branch: %s with error: %s",
-					branch,
-					cause.getMessage()
-				)
-			);
+					String.format("Failed to call GitHub branch: %s with error: %s", branch, cause.getMessage()));
 		}
 	}
 
-	public List<PipelineLeadTime> fetchPipelinesLeadTime(
-		List<DeployTimes> deployTimes,
-		Map<String, String> repositories,
-		String token,
-		GenerateReportRequest request
-	) {
+	public List<PipelineLeadTime> fetchPipelinesLeadTime(List<DeployTimes> deployTimes,
+			Map<String, String> repositories, String token, GenerateReportRequest request) {
 		try {
 			String realToken = BEARER_TITLE + token;
-			String site = ofNullable(request.getCodebaseSetting())
-				.map(it -> it.getSite())
-				.orElse(null);
-			List<PipelineInfoOfRepository> pipelineInfoOfRepositories =
-				getInfoOfRepositories(deployTimes, repositories);
+			String site = ofNullable(request.getCodebaseSetting()).map(it -> it.getSite()).orElse(null);
+			List<PipelineInfoOfRepository> pipelineInfoOfRepositories = getInfoOfRepositories(deployTimes,
+					repositories);
 
-			List<CompletableFuture<PipelineLeadTime>> pipelineLeadTimeFutures =
-				pipelineInfoOfRepositories
-					.stream()
-					.map(item -> {
-						if (
-							item.getPassedDeploy() == null ||
-							item.getPassedDeploy().isEmpty()
-						) {
-							return CompletableFuture.completedFuture(
-								PipelineLeadTime.builder().build()
-							);
-						}
+			List<CompletableFuture<PipelineLeadTime>> pipelineLeadTimeFutures = pipelineInfoOfRepositories.stream()
+				.map(item -> {
+					if (item.getPassedDeploy() == null || item.getPassedDeploy().isEmpty()) {
+						return CompletableFuture.completedFuture(PipelineLeadTime.builder().build());
+					}
 
-						List<CompletableFuture<LeadTime>> leadTimeFutures =
-							getLeadTimeFutures(realToken, item, request, site);
+					List<CompletableFuture<LeadTime>> leadTimeFutures = getLeadTimeFutures(realToken, item, request,
+							site);
 
-						CompletableFuture<List<LeadTime>> allLeadTimesFuture =
-							CompletableFuture.allOf(
-								leadTimeFutures.toArray(
-									new CompletableFuture[0]
-								)
-							).thenApply(v ->
-								leadTimeFutures
-									.stream()
-									.map(CompletableFuture::join)
-									.filter(Objects::nonNull)
-									.toList()
-							);
+					CompletableFuture<List<LeadTime>> allLeadTimesFuture = CompletableFuture
+						.allOf(leadTimeFutures.toArray(new CompletableFuture[0]))
+						.thenApply(v -> leadTimeFutures.stream()
+							.map(CompletableFuture::join)
+							.filter(Objects::nonNull)
+							.toList());
 
-						return allLeadTimesFuture.thenApply(leadTimes ->
-							PipelineLeadTime.builder()
-								.pipelineName(item.getPipelineName())
-								.pipelineStep(item.getPipelineStep())
-								.leadTimes(leadTimes)
-								.build()
-						);
-					})
-					.toList();
-
-			return pipelineLeadTimeFutures
-				.stream()
-				.map(CompletableFuture::join)
+					return allLeadTimesFuture.thenApply(leadTimes -> PipelineLeadTime.builder()
+						.pipelineName(item.getPipelineName())
+						.pipelineStep(item.getPipelineStep())
+						.leadTimes(leadTimes)
+						.build());
+				})
 				.toList();
-		} catch (RuntimeException e) {
+
+			return pipelineLeadTimeFutures.stream().map(CompletableFuture::join).toList();
+		}
+		catch (RuntimeException e) {
 			Throwable cause = ofNullable(e.getCause()).orElse(e);
-			log.error(
-				"Failed to get pipeline leadTimes_error: {}",
-				cause.getMessage()
-			);
+			log.error("Failed to get pipeline leadTimes_error: {}", cause.getMessage());
 			if (cause instanceof BaseException baseException) {
 				throw baseException;
 			}
 			throw new InternalServerErrorException(
-				String.format(
-					"Failed to get pipeline leadTimes, cause is: %s",
-					cause.getMessage()
-				)
-			);
+					String.format("Failed to get pipeline leadTimes, cause is: %s", cause.getMessage()));
 		}
 	}
 
-	private List<CompletableFuture<LeadTime>> getLeadTimeFutures(
-		String realToken,
-		PipelineInfoOfRepository item,
-		GenerateReportRequest request,
-		String site
-	) {
-		return item
-			.getPassedDeploy()
-			.stream()
-			.map(deployInfo -> {
-				CompletableFuture<List<PullRequestInfo>> pullRequestInfoFuture =
-					CompletableFuture.supplyAsync(() -> {
-						try {
-							return gitHubFeignClient.getPullRequestListInfo(
-								resolveSiteUri(site),
-								item.getRepository(),
-								deployInfo.getCommitId(),
-								realToken
-							);
-						} catch (NotFoundException e) {
-							return Collections.emptyList();
-						}
-					});
-				return pullRequestInfoFuture.thenApply(pullRequestInfos ->
-					getLeadTimeByPullRequest(
-						realToken,
-						item,
-						deployInfo,
-						pullRequestInfos,
-						request,
-						site
-					)
-				);
-			})
-			.filter(Objects::nonNull)
-			.toList();
+	private List<CompletableFuture<LeadTime>> getLeadTimeFutures(String realToken, PipelineInfoOfRepository item,
+			GenerateReportRequest request, String site) {
+		return item.getPassedDeploy().stream().map(deployInfo -> {
+			CompletableFuture<List<PullRequestInfo>> pullRequestInfoFuture = CompletableFuture.supplyAsync(() -> {
+				try {
+					return gitHubFeignClient.getPullRequestListInfo(resolveSiteUri(site), item.getRepository(),
+							deployInfo.getCommitId(), realToken);
+				}
+				catch (NotFoundException e) {
+					return Collections.emptyList();
+				}
+			});
+			return pullRequestInfoFuture.thenApply(pullRequestInfos -> getLeadTimeByPullRequest(realToken, item,
+					deployInfo, pullRequestInfos, request, site));
+		}).filter(Objects::nonNull).toList();
 	}
 
-	private List<PipelineInfoOfRepository> getInfoOfRepositories(
-		List<DeployTimes> deployTimes,
-		Map<String, String> repositories
-	) {
-		return deployTimes
-			.stream()
-			.map(deployTime -> {
-				String repository = GithubUtil.getGithubUrlFullName(
-					repositories.get(deployTime.getPipelineId())
-				);
-				List<DeployInfo> validPassedDeploy =
-					deployTime.getPassed() == null
-						? null
-						: deployTime
-								.getPassed()
-								.stream()
-								.filter(deployInfo ->
-									deployInfo
-										.getJobName()
-										.equals(deployTime.getPipelineStep())
-								)
-								.toList();
-				return PipelineInfoOfRepository.builder()
-					.repository(repository)
-					.passedDeploy(validPassedDeploy)
-					.pipelineStep(deployTime.getPipelineStep())
-					.pipelineName(deployTime.getPipelineName())
-					.build();
-			})
-			.toList();
+	private List<PipelineInfoOfRepository> getInfoOfRepositories(List<DeployTimes> deployTimes,
+			Map<String, String> repositories) {
+		return deployTimes.stream().map(deployTime -> {
+			String repository = GithubUtil.getGithubUrlFullName(repositories.get(deployTime.getPipelineId()));
+			List<DeployInfo> validPassedDeploy = deployTime.getPassed() == null ? null
+					: deployTime.getPassed()
+						.stream()
+						.filter(deployInfo -> deployInfo.getJobName().equals(deployTime.getPipelineStep()))
+						.toList();
+			return PipelineInfoOfRepository.builder()
+				.repository(repository)
+				.passedDeploy(validPassedDeploy)
+				.pipelineStep(deployTime.getPipelineStep())
+				.pipelineName(deployTime.getPipelineName())
+				.build();
+		}).toList();
 	}
 
-	private LeadTime getLeadTimeByPullRequest(
-		String realToken,
-		PipelineInfoOfRepository item,
-		DeployInfo deployInfo,
-		List<PullRequestInfo> pullRequestInfos,
-		GenerateReportRequest request,
-		String site
-	) {
-		LeadTime noPrLeadTime = parseNoMergeLeadTime(
-			deployInfo,
-			item,
-			realToken,
-			site
-		);
+	private LeadTime getLeadTimeByPullRequest(String realToken, PipelineInfoOfRepository item, DeployInfo deployInfo,
+			List<PullRequestInfo> pullRequestInfos, GenerateReportRequest request, String site) {
+		LeadTime noPrLeadTime = parseNoMergeLeadTime(deployInfo, item, realToken, site);
 		if (pullRequestInfos.isEmpty()) {
 			return noPrLeadTime;
 		}
 
-		Optional<PullRequestInfo> mergedPull = pullRequestInfos
-			.stream()
-			.filter(
-				gitHubPull ->
-					gitHubPull.getMergedAt() != null &&
-					gitHubPull.getUrl().contains(item.getRepository())
-			)
+		Optional<PullRequestInfo> mergedPull = pullRequestInfos.stream()
+			.filter(gitHubPull -> gitHubPull.getMergedAt() != null
+					&& gitHubPull.getUrl().contains(item.getRepository()))
 			.min(Comparator.comparing(PullRequestInfo::getNumber));
 
 		if (mergedPull.isEmpty()) {
 			return noPrLeadTime;
 		}
 
-		List<CommitInfo> commitInfos =
-			gitHubFeignClient.getPullRequestCommitInfo(
-				resolveSiteUri(site),
-				item.getRepository(),
-				mergedPull.get().getNumber().toString(),
-				realToken
-			);
+		List<CommitInfo> commitInfos = gitHubFeignClient.getPullRequestCommitInfo(resolveSiteUri(site),
+				item.getRepository(), mergedPull.get().getNumber().toString(), realToken);
 		CommitInfo firstCommitInfo = commitInfos.get(0);
-		if (
-			!mergedPull
-				.get()
-				.getMergeCommitSha()
-				.equals(deployInfo.getCommitId())
-		) {
+		if (!mergedPull.get().getMergeCommitSha().equals(deployInfo.getCommitId())) {
 			return noPrLeadTime;
 		}
-		return mapLeadTimeWithInfo(
-			mergedPull.get(),
-			deployInfo,
-			firstCommitInfo,
-			request
-		);
+		return mapLeadTimeWithInfo(mergedPull.get(), deployInfo, firstCommitInfo, request);
 	}
 
-	private LeadTime parseNoMergeLeadTime(
-		DeployInfo deployInfo,
-		PipelineInfoOfRepository item,
-		String realToken,
-		String site
-	) {
-		long jobFinishTime = Instant.parse(
-			deployInfo.getJobFinishTime()
-		).toEpochMilli();
-		long jobStartTime = Instant.parse(
-			deployInfo.getJobStartTime()
-		).toEpochMilli();
-		long pipelineCreateTime = Instant.parse(
-			deployInfo.getPipelineCreateTime()
-		).toEpochMilli();
+	private LeadTime parseNoMergeLeadTime(DeployInfo deployInfo, PipelineInfoOfRepository item, String realToken,
+			String site) {
+		long jobFinishTime = Instant.parse(deployInfo.getJobFinishTime()).toEpochMilli();
+		long jobStartTime = Instant.parse(deployInfo.getJobStartTime()).toEpochMilli();
+		long pipelineCreateTime = Instant.parse(deployInfo.getPipelineCreateTime()).toEpochMilli();
 		long prLeadTime = 0;
 		long firstCommitTime;
 		CommitInfo commitInfo = new CommitInfo();
 		try {
-			commitInfo = gitHubFeignClient.getCommitInfo(
-				resolveSiteUri(site),
-				item.getRepository(),
-				deployInfo.getCommitId(),
-				realToken
-			);
-		} catch (Exception e) {
-			log.error(
-				"Failed to get commit info_repoId: {},commitId: {}, error: {}",
-				item.getRepository(),
-				deployInfo.getCommitId(),
-				e.getMessage()
-			);
+			commitInfo = gitHubFeignClient.getCommitInfo(resolveSiteUri(site), item.getRepository(),
+					deployInfo.getCommitId(), realToken);
+		}
+		catch (Exception e) {
+			log.error("Failed to get commit info_repoId: {},commitId: {}, error: {}", item.getRepository(),
+					deployInfo.getCommitId(), e.getMessage());
 		}
 
 		Long noPRCommitTime = null;
-		if (
-			commitInfo.getCommit() != null &&
-			commitInfo.getCommit().getCommitter() != null &&
-			commitInfo.getCommit().getCommitter().getDate() != null
-		) {
-			noPRCommitTime = Instant.parse(
-				commitInfo.getCommit().getCommitter().getDate()
-			).toEpochMilli();
+		if (commitInfo.getCommit() != null && commitInfo.getCommit().getCommitter() != null
+				&& commitInfo.getCommit().getCommitter().getDate() != null) {
+			noPRCommitTime = Instant.parse(commitInfo.getCommit().getCommitter().getDate()).toEpochMilli();
 			firstCommitTime = noPRCommitTime;
-		} else {
+		}
+		else {
 			firstCommitTime = jobStartTime;
 		}
+		String commitMessage = getCommitMessage(commitInfo);
 
 		return LeadTime.builder()
 			.commitId(deployInfo.getCommitId())
@@ -492,6 +316,8 @@ public class GitHubService {
 			.pipelineLeadTime(jobFinishTime - firstCommitTime)
 			.totalTime(jobFinishTime - firstCommitTime)
 			.prLeadTime(prLeadTime)
+			.pipelineTitle(commitMessage)
+			.prTitle(commitMessage)
 			.isRevert(isRevert(commitInfo))
 			.holidays(0)
 			.build();
@@ -499,102 +325,69 @@ public class GitHubService {
 
 	private Boolean isRevert(CommitInfo commitInfo) {
 		Boolean isRevert = null;
-		if (
-			commitInfo.getCommit() != null &&
-			commitInfo.getCommit().getMessage() != null
-		) {
-			isRevert = commitInfo
-				.getCommit()
-				.getMessage()
-				.toLowerCase()
-				.startsWith("revert");
+		if (commitInfo.getCommit() != null && commitInfo.getCommit().getMessage() != null) {
+			isRevert = commitInfo.getCommit().getMessage().toLowerCase().startsWith("revert");
 		}
 		return isRevert;
 	}
 
-	public LeadTime mapLeadTimeWithInfo(
-		PullRequestInfo pullRequestInfo,
-		DeployInfo deployInfo,
-		CommitInfo commitInfo,
-		GenerateReportRequest request
-	) {
+	public LeadTime mapLeadTimeWithInfo(PullRequestInfo pullRequestInfo, DeployInfo deployInfo, CommitInfo commitInfo,
+			GenerateReportRequest request) {
 		log.info("Start to calculate base lead time");
 		if (pullRequestInfo.getMergedAt() == null) {
 			return null;
 		}
-		long prCreatedTime = Instant.parse(
-			pullRequestInfo.getCreatedAt()
-		).toEpochMilli();
-		long prMergedTime = Instant.parse(
-			pullRequestInfo.getMergedAt()
-		).toEpochMilli();
-		Long jobFinishTime = ofNullable(deployInfo.getJobFinishTime())
-			.map(it -> Instant.parse(it).toEpochMilli())
+		long prCreatedTime = Instant.parse(pullRequestInfo.getCreatedAt()).toEpochMilli();
+		long prMergedTime = Instant.parse(pullRequestInfo.getMergedAt()).toEpochMilli();
+		Long jobFinishTime = ofNullable(deployInfo.getJobFinishTime()).map(it -> Instant.parse(it).toEpochMilli())
 			.orElse(null);
-		Long jobStartTime = ofNullable(deployInfo.getJobStartTime())
-			.map(it -> Instant.parse(it).toEpochMilli())
+		Long jobStartTime = ofNullable(deployInfo.getJobStartTime()).map(it -> Instant.parse(it).toEpochMilli())
 			.orElse(null);
 		Long pipelineCreateTime = ofNullable(deployInfo.getPipelineCreateTime())
 			.map(it -> Instant.parse(it).toEpochMilli())
 			.orElse(null);
-		String commitId = ofNullable(deployInfo.getCommitId()).orElse(
-			commitInfo.getCommitId()
-		);
+		String commitId = ofNullable(deployInfo.getCommitId()).orElse(commitInfo.getCommitId());
 		long firstCommitTimeInPr;
-		if (
-			commitInfo.getCommit() != null &&
-			commitInfo.getCommit().getCommitter() != null &&
-			commitInfo.getCommit().getCommitter().getDate() != null
-		) {
-			firstCommitTimeInPr = Instant.parse(
-				commitInfo.getCommit().getCommitter().getDate()
-			).toEpochMilli();
-		} else {
+		if (commitInfo.getCommit() != null && commitInfo.getCommit().getCommitter() != null
+				&& commitInfo.getCommit().getCommitter().getDate() != null) {
+			firstCommitTimeInPr = Instant.parse(commitInfo.getCommit().getCommitter().getDate()).toEpochMilli();
+		}
+		else {
 			firstCommitTimeInPr = 0;
 		}
 
-		long pipelineLeadTime = ofNullable(jobFinishTime)
-			.map(it -> it - prMergedTime)
-			.orElse(0L);
+		long pipelineLeadTime = ofNullable(jobFinishTime).map(it -> it - prMergedTime).orElse(0L);
 		long prLeadTime;
 		long totalTime;
 		long holidays = 0;
 		Boolean isRevert = isRevert(commitInfo);
-		if (
-			Boolean.TRUE.equals(isRevert) ||
-			isNoFirstCommitTimeInPr(firstCommitTimeInPr)
-		) {
+		if (Boolean.TRUE.equals(isRevert) || isNoFirstCommitTimeInPr(firstCommitTimeInPr)) {
 			prLeadTime = 0;
-		} else {
-			WorkInfo workInfo = workDay.calculateWorkTimeAndHolidayBetween(
-				firstCommitTimeInPr,
-				prMergedTime,
-				request.getCalendarType(),
-				request.getTimezoneByZoneId()
-			);
+		}
+		else {
+			WorkInfo workInfo = workDay.calculateWorkTimeAndHolidayBetween(firstCommitTimeInPr, prMergedTime,
+					request.getCalendarType(), request.getTimezoneByZoneId());
 			prLeadTime = workInfo.getWorkTime();
 			holidays = workInfo.getHolidays();
 		}
 		if (prLeadTime < 0) {
 			log.error(
-				"calculate work time error, because the work time is negative, request start time: {}," +
-					" request end time: {}, first commit time in pr: {}, pr merged time: {}, author: {}," +
-					" pull request url: {}",
-				request.getStartTime(),
-				request.getEndTime(),
-				firstCommitTimeInPr,
-				prMergedTime,
-				commitInfo.getCommit().getAuthor(),
-				pullRequestInfo.getUrl()
-			);
+					"calculate work time error, because the work time is negative, request start time: {},"
+							+ " request end time: {}, first commit time in pr: {}, pr merged time: {}, author: {},"
+							+ " pull request url: {}",
+					request.getStartTime(), request.getEndTime(), firstCommitTimeInPr, prMergedTime,
+					commitInfo.getCommit().getAuthor(), pullRequestInfo.getUrl());
 			prLeadTime = 0;
 		}
 		totalTime = prLeadTime + pipelineLeadTime;
+		String preferredTitle = ofNullable(pullRequestInfo.getTitle()).filter(it -> !it.isBlank()).orElse(null);
 
 		log.info("Successfully to calculate base lead time");
 		return LeadTime.builder()
 			.pipelineLeadTime(pipelineLeadTime)
 			.prLeadTime(prLeadTime)
+			.pipelineTitle(preferredTitle)
+			.prTitle(preferredTitle)
 			.firstCommitTimeInPr(firstCommitTimeInPr)
 			.prMergedTime(prMergedTime)
 			.totalTime(totalTime)
@@ -611,56 +404,36 @@ public class GitHubService {
 			.build();
 	}
 
+	private String getCommitMessage(CommitInfo commitInfo) {
+		return ofNullable(commitInfo).map(CommitInfo::getCommit).map(Commit::getMessage).orElse(null);
+	}
+
 	private static boolean isNoFirstCommitTimeInPr(long firstCommitTimeInPr) {
 		return firstCommitTimeInPr == 0;
 	}
 
-	public CommitInfo fetchCommitInfo(
-		String commitId,
-		String repositoryId,
-		String token
-	) {
+	public CommitInfo fetchCommitInfo(String commitId, String repositoryId, String token) {
 		try {
 			String realToken = BEARER_TITLE + token;
-			log.info(
-				"Start to get commit info, repoId: {},commitId: {}",
-				repositoryId,
-				commitId
-			);
-			CommitInfo commitInfo = gitHubFeignClient.getCommitInfo(
-				resolveSiteUri(null),
-				repositoryId,
-				commitId,
-				realToken
-			);
-			log.info(
-				"Successfully get commit info, repoId: {},commitId: {}, author: {}",
-				repositoryId,
-				commitId,
-				commitInfo.getCommit().getAuthor()
-			);
+			log.info("Start to get commit info, repoId: {},commitId: {}", repositoryId, commitId);
+			CommitInfo commitInfo = gitHubFeignClient.getCommitInfo(resolveSiteUri(null), repositoryId, commitId,
+					realToken);
+			log.info("Successfully get commit info, repoId: {},commitId: {}, author: {}", repositoryId, commitId,
+					commitInfo.getCommit().getAuthor());
 			return commitInfo;
-		} catch (RuntimeException e) {
+		}
+		catch (RuntimeException e) {
 			Throwable cause = ofNullable(e.getCause()).orElse(e);
-			log.error(
-				"Failed to get commit info_repoId: {},commitId: {}, error: {}",
-				repositoryId,
-				commitId,
-				cause.getMessage()
-			);
+			log.error("Failed to get commit info_repoId: {},commitId: {}, error: {}", repositoryId, commitId,
+					cause.getMessage());
 			if (cause instanceof NotFoundException) {
 				return null;
 			}
 			if (cause instanceof BaseException baseException) {
 				throw baseException;
 			}
-			throw new InternalServerErrorException(
-				String.format(
-					"Failed to get commit info_repoId: %s,cause is: %s",
-					repositoryId,
-					cause.getMessage()
-				)
-			);
+			throw new InternalServerErrorException(String.format("Failed to get commit info_repoId: %s,cause is: %s",
+					repositoryId, cause.getMessage()));
 		}
 	}
 
@@ -669,51 +442,27 @@ public class GitHubService {
 		int initPage = 1;
 		String realToken = BEARER_TITLE + token;
 		String normalizedSite = normalizeSite(site);
-		PageOrganizationsInfoDTO pageOrganizationsInfoDTO =
-			cachePageService.getGitHubOrganizations(
-				realToken,
-				normalizedSite,
-				initPage,
-				PER_PAGE
-			);
-		List<OrganizationsInfoDTO> firstPageStepsInfo =
-			pageOrganizationsInfoDTO.getPageInfo();
+		PageOrganizationsInfoDTO pageOrganizationsInfoDTO = cachePageService.getGitHubOrganizations(realToken,
+				normalizedSite, initPage, PER_PAGE);
+		List<OrganizationsInfoDTO> firstPageStepsInfo = pageOrganizationsInfoDTO.getPageInfo();
 		int totalPage = pageOrganizationsInfoDTO.getTotalPage();
-		log.info(
-			"Successfully parse the total page_total page of organizations: {}",
-			totalPage
-		);
+		log.info("Successfully parse the total page_total page of organizations: {}", totalPage);
 		List<String> organizationNames = new ArrayList<>();
 		if (Objects.nonNull(firstPageStepsInfo)) {
-			organizationNames.addAll(
-				firstPageStepsInfo
-					.stream()
-					.map(OrganizationsInfoDTO::getLogin)
-					.toList()
-			);
+			organizationNames.addAll(firstPageStepsInfo.stream().map(OrganizationsInfoDTO::getLogin).toList());
 		}
 		if (totalPage > 1) {
 			for (int i = initPage + 1; i < totalPage + 1; i = i + BATCH_SIZE) {
-				List<OrganizationsInfoDTO> organizationNamesOtherFirstPageList =
-					IntStream.range(i, Math.min(i + BATCH_SIZE, totalPage + 1))
-						.parallel()
-						.mapToObj(page ->
-							cachePageService
-								.getGitHubOrganizations(
-									realToken,
-									normalizedSite,
-									page,
-									PER_PAGE
-								)
-								.getPageInfo()
-						)
-						.flatMap(Collection::stream)
-						.toList();
-				List<String> orgNamesOtherFirstPage =
-					organizationNamesOtherFirstPageList
-						.stream()
-						.map(OrganizationsInfoDTO::getLogin)
-						.toList();
+				List<OrganizationsInfoDTO> organizationNamesOtherFirstPageList = IntStream
+					.range(i, Math.min(i + BATCH_SIZE, totalPage + 1))
+					.parallel()
+					.mapToObj(page -> cachePageService.getGitHubOrganizations(realToken, normalizedSite, page, PER_PAGE)
+						.getPageInfo())
+					.flatMap(Collection::stream)
+					.toList();
+				List<String> orgNamesOtherFirstPage = organizationNamesOtherFirstPageList.stream()
+					.map(OrganizationsInfoDTO::getLogin)
+					.toList();
 				organizationNames.addAll(orgNamesOtherFirstPage);
 			}
 		}
@@ -721,213 +470,97 @@ public class GitHubService {
 		return organizationNames;
 	}
 
-	public List<String> getAllRepos(
-		String token,
-		String organization,
-		long endTime,
-		String site
-	) {
-		log.info(
-			"Start to get all repos, organization: {}, endTime: {}",
-			organization,
-			endTime
-		);
+	public List<String> getAllRepos(String token, String organization, long endTime, String site) {
+		log.info("Start to get all repos, organization: {}, endTime: {}", organization, endTime);
 		Instant endTimeInstant = Instant.ofEpochMilli(endTime);
 		int initPage = 1;
 		String realToken = BEARER_TITLE + token;
 		String normalizedSite = normalizeSite(site);
-		PageReposInfoDTO pageReposInfoDTO = cachePageService.getGitHubRepos(
-			realToken,
-			normalizedSite,
-			organization,
-			initPage,
-			PER_PAGE
-		);
+		PageReposInfoDTO pageReposInfoDTO = cachePageService.getGitHubRepos(realToken, normalizedSite, organization,
+				initPage, PER_PAGE);
 		List<ReposInfoDTO> firstPageStepsInfo = pageReposInfoDTO.getPageInfo();
 		int totalPage = pageReposInfoDTO.getTotalPage();
-		log.info(
-			"Successfully parse the total page_total page of repos: {}",
-			totalPage
-		);
+		log.info("Successfully parse the total page_total page of repos: {}", totalPage);
 		List<String> repoNames = new ArrayList<>();
 		if (Objects.nonNull(firstPageStepsInfo)) {
-			repoNames.addAll(
-				firstPageStepsInfo
-					.stream()
-					.filter(it ->
-						Instant.parse(it.getCreatedAt()).isBefore(
-							endTimeInstant
-						)
-					)
-					.map(ReposInfoDTO::getName)
-					.toList()
-			);
+			repoNames.addAll(firstPageStepsInfo.stream()
+				.filter(it -> Instant.parse(it.getCreatedAt()).isBefore(endTimeInstant))
+				.map(ReposInfoDTO::getName)
+				.toList());
 		}
 		if (totalPage > 1) {
 			for (int i = initPage + 1; i < totalPage + 1; i = i + BATCH_SIZE) {
-				List<ReposInfoDTO> repoNamesOtherFirstPageList =
-					IntStream.range(i, Math.min(i + BATCH_SIZE, totalPage + 1))
-						.parallel()
-						.mapToObj(page ->
-							cachePageService
-								.getGitHubRepos(
-									realToken,
-									normalizedSite,
-									organization,
-									page,
-									PER_PAGE
-								)
-								.getPageInfo()
-						)
-						.flatMap(Collection::stream)
-						.filter(it ->
-							Instant.parse(it.getCreatedAt()).isBefore(
-								endTimeInstant
-							)
-						)
-						.toList();
-				List<String> repoName = repoNamesOtherFirstPageList
-					.stream()
-					.map(ReposInfoDTO::getName)
+				List<ReposInfoDTO> repoNamesOtherFirstPageList = IntStream
+					.range(i, Math.min(i + BATCH_SIZE, totalPage + 1))
+					.parallel()
+					.mapToObj(page -> cachePageService
+						.getGitHubRepos(realToken, normalizedSite, organization, page, PER_PAGE)
+						.getPageInfo())
+					.flatMap(Collection::stream)
+					.filter(it -> Instant.parse(it.getCreatedAt()).isBefore(endTimeInstant))
 					.toList();
+				List<String> repoName = repoNamesOtherFirstPageList.stream().map(ReposInfoDTO::getName).toList();
 				repoNames.addAll(repoName);
 			}
 		}
-		log.info(
-			"Successfully to get all repos, organization: {}",
-			organization
-		);
+		log.info("Successfully to get all repos, organization: {}", organization);
 		return repoNames;
 	}
 
-	public List<String> getAllBranches(
-		String token,
-		String organization,
-		String repo,
-		String site
-	) {
-		log.info(
-			"Start to get all branches, organization: {}, repo: {}",
-			organization,
-			repo
-		);
+	public List<String> getAllBranches(String token, String organization, String repo, String site) {
+		log.info("Start to get all branches, organization: {}, repo: {}", organization, repo);
 		int initPage = 1;
 		String realToken = BEARER_TITLE + token;
 		String normalizedSite = normalizeSite(site);
-		PageBranchesInfoDTO pageBranchesInfoDTO =
-			cachePageService.getGitHubBranches(
-				realToken,
-				normalizedSite,
-				organization,
-				repo,
-				initPage,
-				PER_PAGE
-			);
-		List<BranchesInfoDTO> firstPageStepsInfo =
-			pageBranchesInfoDTO.getPageInfo();
+		PageBranchesInfoDTO pageBranchesInfoDTO = cachePageService.getGitHubBranches(realToken, normalizedSite,
+				organization, repo, initPage, PER_PAGE);
+		List<BranchesInfoDTO> firstPageStepsInfo = pageBranchesInfoDTO.getPageInfo();
 		int totalPage = pageBranchesInfoDTO.getTotalPage();
-		log.info(
-			"Successfully parse the total page_total page of branches: {}",
-			totalPage
-		);
+		log.info("Successfully parse the total page_total page of branches: {}", totalPage);
 		List<String> branchNames = new ArrayList<>();
 		if (Objects.nonNull(firstPageStepsInfo)) {
-			branchNames.addAll(
-				firstPageStepsInfo
-					.stream()
-					.map(BranchesInfoDTO::getName)
-					.toList()
-			);
+			branchNames.addAll(firstPageStepsInfo.stream().map(BranchesInfoDTO::getName).toList());
 		}
 		if (totalPage > 1) {
 			for (int i = initPage + 1; i < totalPage + 1; i = i + BATCH_SIZE) {
-				List<BranchesInfoDTO> branchNamesOtherFirstPageList =
-					IntStream.range(i, Math.min(i + BATCH_SIZE, totalPage + 1))
-						.parallel()
-						.mapToObj(page ->
-							cachePageService
-								.getGitHubBranches(
-									realToken,
-									normalizedSite,
-									organization,
-									repo,
-									page,
-									PER_PAGE
-								)
-								.getPageInfo()
-						)
-						.flatMap(Collection::stream)
-						.toList();
-				List<String> branchNamesOtherFirstPage =
-					branchNamesOtherFirstPageList
-						.stream()
-						.map(BranchesInfoDTO::getName)
-						.toList();
+				List<BranchesInfoDTO> branchNamesOtherFirstPageList = IntStream
+					.range(i, Math.min(i + BATCH_SIZE, totalPage + 1))
+					.parallel()
+					.mapToObj(page -> cachePageService
+						.getGitHubBranches(realToken, normalizedSite, organization, repo, page, PER_PAGE)
+						.getPageInfo())
+					.flatMap(Collection::stream)
+					.toList();
+				List<String> branchNamesOtherFirstPage = branchNamesOtherFirstPageList.stream()
+					.map(BranchesInfoDTO::getName)
+					.toList();
 				branchNames.addAll(branchNamesOtherFirstPage);
 			}
 		}
-		log.info(
-			"Successfully to get all branches, organization: {}, repo: {}",
-			organization,
-			repo
-		);
+		log.info("Successfully to get all branches, organization: {}, repo: {}", organization, repo);
 		return branchNames;
 	}
 
-	public List<String> getAllCrews(
-		String token,
-		String organization,
-		String repo,
-		String branch,
-		long startTime,
-		long endTime,
-		String site
-	) {
-		log.info(
-			"Start to get all crews, organization: {}, repo: {}, branch: {}, startTime: {}, endTime: {}",
-			organization,
-			repo,
-			branch,
-			startTime,
-			endTime
-		);
+	public List<String> getAllCrews(String token, String organization, String repo, String branch, long startTime,
+			long endTime, String site) {
+		log.info("Start to get all crews, organization: {}, repo: {}, branch: {}, startTime: {}, endTime: {}",
+				organization, repo, branch, startTime, endTime);
 		String realToken = BEARER_TITLE + token;
-		List<PullRequestInfo> validPullRequestInfo = getValidPullRequestInfo(
-			realToken,
-			organization,
-			repo,
-			branch,
-			startTime,
-			endTime,
-			site
-		);
-		List<String> crews = validPullRequestInfo
-			.stream()
+		List<PullRequestInfo> validPullRequestInfo = getValidPullRequestInfo(realToken, organization, repo, branch,
+				startTime, endTime, site);
+		List<String> crews = validPullRequestInfo.stream()
 			.map(PullRequestInfo::getUser)
 			.map(PullRequestInfo.PullRequestUser::getLogin)
 			.distinct()
 			.toList();
-		log.info(
-			"Successfully to get all crews, organization: {}, repo: {}, branch: {}, startTime: {}, endTime: {}",
-			organization,
-			repo,
-			branch,
-			startTime,
-			endTime
-		);
+		log.info("Successfully to get all crews, organization: {}, repo: {}, branch: {}, startTime: {}, endTime: {}",
+				organization, repo, branch, startTime, endTime);
 		return crews;
 	}
 
-	private PullRequestFinishedInfo filterPullRequestByTimeRange(
-		List<PullRequestInfo> pullRequestInfoList,
-		long startTime,
-		long endTime
-	) {
-		log.info(
-			"Start to filter pull request, startTime: {}, endTime: {}",
-			startTime,
-			endTime
-		);
+	private PullRequestFinishedInfo filterPullRequestByTimeRange(List<PullRequestInfo> pullRequestInfoList,
+			long startTime, long endTime) {
+		log.info("Start to filter pull request, startTime: {}, endTime: {}", startTime, endTime);
 		Instant startTimeInstant = Instant.ofEpochMilli(startTime);
 		Instant endTimeInstant = Instant.ofEpochMilli(endTime);
 		List<PullRequestInfo> validPullRequestList = new ArrayList<>();
@@ -938,12 +571,8 @@ public class GitHubService {
 			}
 			Instant createdAt = Instant.parse(PullRequestInfo.getCreatedAt());
 			Instant mergedAt = Instant.parse(PullRequestInfo.getMergedAt());
-			if (
-				createdAt.isAfter(startTimeInstant) &&
-				!createdAt.isAfter(endTimeInstant) &&
-				mergedAt.isAfter(startTimeInstant) &&
-				!mergedAt.isAfter(endTimeInstant)
-			) {
+			if (createdAt.isAfter(startTimeInstant) && !createdAt.isAfter(endTimeInstant)
+					&& mergedAt.isAfter(startTimeInstant) && !mergedAt.isAfter(endTimeInstant)) {
 				validPullRequestList.add(PullRequestInfo);
 			}
 			if (createdAt.isBefore(startTimeInstant)) {
@@ -951,11 +580,8 @@ public class GitHubService {
 			}
 		}
 		log.info(
-			"Successfully to filter pull request, startTime: {}, endTime: {}, should get next page pull request: {}",
-			startTime,
-			endTime,
-			isGetNextPage
-		);
+				"Successfully to filter pull request, startTime: {}, endTime: {}, should get next page pull request: {}",
+				startTime, endTime, isGetNextPage);
 		return PullRequestFinishedInfo.builder()
 			.isGetNextPage(isGetNextPage)
 			.pullRequestInfoList(validPullRequestList)
@@ -966,199 +592,89 @@ public class GitHubService {
 		log.info("Start to fetch repo data");
 		long startTime = Long.parseLong(request.getStartTime());
 		long endTime = Long.parseLong(request.getEndTime());
-		String token = ofNullable(
-			request.getCodebaseSetting().getToken()
-		).orElse("");
-		String site = ofNullable(request.getCodebaseSetting().getSite()).orElse(
-			null
-		);
+		String token = ofNullable(request.getCodebaseSetting().getToken()).orElse("");
+		String site = ofNullable(request.getCodebaseSetting().getSite()).orElse(null);
 		String realToken = BEARER_TITLE + token;
 		List<String> crews = request.getCodebaseSetting().getCrews();
 
-		List<SourceControlLeadTime> sourceControlLeadTimes = request
-			.getCodebaseSetting()
+		List<SourceControlLeadTime> sourceControlLeadTimes = request.getCodebaseSetting()
 			.getCodebases()
 			.stream()
 			.map(codeBase -> {
 				String organization = codeBase.getOrganization();
 				String repo = codeBase.getRepo();
 				List<String> branches = codeBase.getBranches();
-				return branches
-					.stream()
-					.map(branch -> {
-						List<LeadTime> leadTimes = getValidPullRequestInfo(
-							realToken,
-							organization,
-							repo,
-							branch,
-							startTime,
-							endTime,
-							site
-						)
-							.stream()
-							.filter(pullRequestInfo -> {
-								if (crews.isEmpty()) {
-									return true;
-								}
-								return crews
-									.stream()
-									.anyMatch(crew ->
-										Objects.equals(
-											pullRequestInfo
-												.getUser()
-												.getLogin(),
-											crew
-										)
-									);
-							})
-							.map(pullRequestInfo -> {
-								String pullNumber = pullRequestInfo
-									.getNumber()
-									.toString();
-								log.info(
-									"Start to get first code commit, organization: {}, repo: {}, pull number: {}",
-									organization,
-									repo,
-									pullNumber
-								);
-								CommitInfo firstCodeCommit = gitHubFeignClient
-									.getPullRequestCommitInfo(
-										resolveSiteUri(site),
-										String.format(
-											"%s/%s",
-											organization,
-											repo
-										),
-										pullNumber,
-										realToken
-									)
-									.get(0);
-								log.info(
+				return branches.stream().map(branch -> {
+					List<LeadTime> leadTimes = getValidPullRequestInfo(realToken, organization, repo, branch, startTime,
+							endTime, site)
+						.stream()
+						.filter(pullRequestInfo -> {
+							if (crews.isEmpty()) {
+								return true;
+							}
+							return crews.stream()
+								.anyMatch(crew -> Objects.equals(pullRequestInfo.getUser().getLogin(), crew));
+						})
+						.map(pullRequestInfo -> {
+							String pullNumber = pullRequestInfo.getNumber().toString();
+							log.info("Start to get first code commit, organization: {}, repo: {}, pull number: {}",
+									organization, repo, pullNumber);
+							CommitInfo firstCodeCommit = gitHubFeignClient
+								.getPullRequestCommitInfo(resolveSiteUri(site),
+										String.format("%s/%s", organization, repo), pullNumber, realToken)
+								.get(0);
+							log.info(
 									"Successfully to get first code commit, organization: {}, repo: {}, pull number: {}",
-									organization,
-									repo,
-									pullNumber
-								);
-								return Pair.of(
-									pullRequestInfo,
-									firstCodeCommit
-								);
-							})
-							.map(pair ->
-								mapLeadTimeWithInfo(
-									pair.getLeft(),
-									new DeployInfo(),
-									pair.getRight(),
-									request
-								)
-							)
-							.toList();
-						return SourceControlLeadTime.builder()
-							.repo(repo)
-							.organization(organization)
-							.branch(branch)
-							.leadTimes(leadTimes)
-							.build();
-					})
-					.toList();
+									organization, repo, pullNumber);
+							return Pair.of(pullRequestInfo, firstCodeCommit);
+						})
+						.map(pair -> mapLeadTimeWithInfo(pair.getLeft(), new DeployInfo(), pair.getRight(), request))
+						.toList();
+					return SourceControlLeadTime.builder()
+						.repo(repo)
+						.organization(organization)
+						.branch(branch)
+						.leadTimes(leadTimes)
+						.build();
+				}).toList();
 			})
 			.flatMap(Collection::stream)
 			.toList();
 
 		log.info("Successfully fetch repo data");
-		return FetchedData.RepoData.builder()
-			.sourceControlLeadTimes(sourceControlLeadTimes)
-			.build();
+		return FetchedData.RepoData.builder().sourceControlLeadTimes(sourceControlLeadTimes).build();
 	}
 
-	private List<PullRequestInfo> getValidPullRequestInfo(
-		String realToken,
-		String organization,
-		String repo,
-		String branch,
-		long startTime,
-		long endTime,
-		String site
-	) {
-		log.info(
-			"Start to get all pull request, organization: {}, repo: {}, branch: {}, startTime: {}, endTime: {}",
-			organization,
-			repo,
-			branch,
-			startTime,
-			endTime
-		);
+	private List<PullRequestInfo> getValidPullRequestInfo(String realToken, String organization, String repo,
+			String branch, long startTime, long endTime, String site) {
+		log.info("Start to get all pull request, organization: {}, repo: {}, branch: {}, startTime: {}, endTime: {}",
+				organization, repo, branch, startTime, endTime);
 		int initPage = 1;
 		String normalizedSite = normalizeSite(site);
 
 		List<PullRequestInfo> pullRequestInfoList = new ArrayList<>();
-		PagePullRequestInfo pagePullRequestInfo =
-			cachePageService.getGitHubPullRequest(
-				realToken,
-				normalizedSite,
-				organization,
-				repo,
-				branch,
-				initPage,
-				PER_PAGE
-			);
-		List<PullRequestInfo> firstPageStepsInfo =
-			pagePullRequestInfo.getPageInfo();
+		PagePullRequestInfo pagePullRequestInfo = cachePageService.getGitHubPullRequest(realToken, normalizedSite,
+				organization, repo, branch, initPage, PER_PAGE);
+		List<PullRequestInfo> firstPageStepsInfo = pagePullRequestInfo.getPageInfo();
 		int totalPage = pagePullRequestInfo.getTotalPage();
-		log.info(
-			"Successfully parse the total page_total page of pull requests: {}",
-			totalPage
-		);
+		log.info("Successfully parse the total page_total page of pull requests: {}", totalPage);
 		if (Objects.nonNull(firstPageStepsInfo)) {
-			PullRequestFinishedInfo pullRequestFinishedInfo =
-				filterPullRequestByTimeRange(
-					firstPageStepsInfo,
-					startTime,
-					endTime
-				);
-			pullRequestInfoList.addAll(
-				pullRequestFinishedInfo.getPullRequestInfoList()
-			);
+			PullRequestFinishedInfo pullRequestFinishedInfo = filterPullRequestByTimeRange(firstPageStepsInfo,
+					startTime, endTime);
+			pullRequestInfoList.addAll(pullRequestFinishedInfo.getPullRequestInfoList());
 			boolean isGetNextPage = pullRequestFinishedInfo.isGetNextPage();
 			if (totalPage > 1 && isGetNextPage) {
-				for (
-					int i = initPage + 1;
-					i < totalPage + 1;
-					i = i + BATCH_SIZE
-				) {
-					List<PullRequestFinishedInfo> pullRequestFinishedInfoList =
-						IntStream.range(
-							i,
-							Math.min(i + BATCH_SIZE, totalPage + 1)
-						)
-							.parallel()
-							.mapToObj(page ->
-								cachePageService
-									.getGitHubPullRequest(
-										realToken,
-										normalizedSite,
-										organization,
-										repo,
-										branch,
-										page,
-										PER_PAGE
-									)
-									.getPageInfo()
-							)
-							.map(it ->
-								filterPullRequestByTimeRange(
-									it,
-									startTime,
-									endTime
-								)
-							)
-							.toList();
-					pullRequestFinishedInfoList.forEach(it ->
-						pullRequestInfoList.addAll(it.getPullRequestInfoList())
-					);
-					boolean isGoToNextBatch = pullRequestFinishedInfoList
-						.stream()
-						.anyMatch(it -> !it.isGetNextPage());
+				for (int i = initPage + 1; i < totalPage + 1; i = i + BATCH_SIZE) {
+					List<PullRequestFinishedInfo> pullRequestFinishedInfoList = IntStream
+						.range(i, Math.min(i + BATCH_SIZE, totalPage + 1))
+						.parallel()
+						.mapToObj(page -> cachePageService
+							.getGitHubPullRequest(realToken, normalizedSite, organization, repo, branch, page, PER_PAGE)
+							.getPageInfo())
+						.map(it -> filterPullRequestByTimeRange(it, startTime, endTime))
+						.toList();
+					pullRequestFinishedInfoList.forEach(it -> pullRequestInfoList.addAll(it.getPullRequestInfoList()));
+					boolean isGoToNextBatch = pullRequestFinishedInfoList.stream().anyMatch(it -> !it.isGetNextPage());
 					if (isGoToNextBatch) {
 						break;
 					}
@@ -1166,60 +682,31 @@ public class GitHubService {
 			}
 		}
 		log.info(
-			"Successfully to get all pull request, organization: {}, repo: {}, branch: {}, startTime: {}, endTime: {}",
-			organization,
-			repo,
-			branch,
-			startTime,
-			endTime
-		);
+				"Successfully to get all pull request, organization: {}, repo: {}, branch: {}, startTime: {}, endTime: {}",
+				organization, repo, branch, startTime, endTime);
 		return pullRequestInfoList;
 	}
 
-	public List<PipelineCSVInfo> generateCSVForSourceControl(
-		FetchedData.RepoData repoData,
-		List<CodeBase> codeBases
-	) {
-		return codeBases
-			.stream()
-			.parallel()
-			.map(codeBase -> {
-				String organization = codeBase.getOrganization();
-				String repo = codeBase.getRepo();
-				return repoData
-					.getSourceControlLeadTimes()
+	public List<PipelineCSVInfo> generateCSVForSourceControl(FetchedData.RepoData repoData, List<CodeBase> codeBases) {
+		return codeBases.stream().parallel().map(codeBase -> {
+			String organization = codeBase.getOrganization();
+			String repo = codeBase.getRepo();
+			return repoData.getSourceControlLeadTimes()
+				.stream()
+				.filter(sourceControlLeadTime -> Objects.equals(sourceControlLeadTime.getRepo(), repo)
+						&& Objects.equals(sourceControlLeadTime.getOrganization(), organization))
+				.map(sourceControlLeadTime -> sourceControlLeadTime.getLeadTimes()
 					.stream()
-					.filter(
-						sourceControlLeadTime ->
-							Objects.equals(
-								sourceControlLeadTime.getRepo(),
-								repo
-							) &&
-							Objects.equals(
-								sourceControlLeadTime.getOrganization(),
-								organization
-							)
-					)
-					.map(sourceControlLeadTime ->
-						sourceControlLeadTime
-							.getLeadTimes()
-							.stream()
-							.map(leadTime ->
-								PipelineCSVInfo.builder()
-									.organizationName(organization)
-									.repoName(repo)
-									.branchName(
-										sourceControlLeadTime.getBranch()
-									)
-									.leadTimeInfo(new LeadTimeInfo(leadTime))
-									.build()
-							)
-							.toList()
-					)
-					.flatMap(Collection::stream)
-					.toList();
-			})
-			.flatMap(Collection::stream)
-			.toList();
+					.map(leadTime -> PipelineCSVInfo.builder()
+						.organizationName(organization)
+						.repoName(repo)
+						.branchName(sourceControlLeadTime.getBranch())
+						.leadTimeInfo(new LeadTimeInfo(leadTime))
+						.build())
+					.toList())
+				.flatMap(Collection::stream)
+				.toList();
+		}).flatMap(Collection::stream).toList();
 	}
+
 }

@@ -17,6 +17,12 @@ public class LeadTimeInfo {
 	private Integer pullNumber;
 
 	@Nullable
+	private String pipelineTitle;
+
+	@Nullable
+	private String prTitle;
+
+	@Nullable
 	private String prCreatedTime;
 
 	@Nullable
@@ -52,6 +58,8 @@ public class LeadTimeInfo {
 			return;
 		}
 		this.pullNumber = leadTime.getPullNumber();
+		this.pipelineTitle = leadTime.getPipelineTitle();
+		this.prTitle = leadTime.getPrTitle();
 		this.firstCommitTimeInPr = convertToISOFormat(leadTime.getFirstCommitTimeInPr());
 		this.prCreatedTime = convertToISOFormat(leadTime.getPrCreatedTime());
 		this.prMergedTime = convertToISOFormat(leadTime.getPrMergedTime());

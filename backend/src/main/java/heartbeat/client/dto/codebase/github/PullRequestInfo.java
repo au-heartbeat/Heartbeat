@@ -32,6 +32,8 @@ public class PullRequestInfo implements Serializable {
 	@JsonProperty("merge_commit_sha")
 	private String mergeCommitSha;
 
+	private String title;
+
 	private PullRequestUser user;
 
 	@AllArgsConstructor

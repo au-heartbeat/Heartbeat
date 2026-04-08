@@ -76,10 +76,11 @@ public class CSVFileGenerator {
 
 	public void convertPipelineDataToCSV(String uuid, List<PipelineCSVInfo> leadTimeData, String csvTimeStamp) {
 		String[] headers = { "Organization", "Pipeline Name", "Repo Name", "Pipeline Step", "Valid", "Build Number",
-				"Pull Number", "Code Committer", "Build Creator", "First Code Committed Time In PR", "PR Created Time",
-				"PR Merged Time", "No PR Committed Time", "Job Start Time", "Pipeline Start Time",
-				"Pipeline Finish Time", "Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-				"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" };
+				"Pull Number", "Pipeline Title", "PR Title", "Code Committer", "Build Creator",
+				"First Code Committed Time In PR", "PR Created Time", "PR Merged Time", "No PR Committed Time",
+				"Job Start Time", "Pipeline Start Time", "Pipeline Finish Time", "Non-Workdays (Hours)",
+				"Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)", "Pipeline Lead Time (HH:mm:ss)", "Status",
+				"Branch", "Revert" };
 
 		List<String[]> pipelineData = new ArrayList<>();
 		pipelineData.add(headers);
@@ -105,6 +106,8 @@ public class CSVFileGenerator {
 		String valid = ofNullable(csvInfo.getValid()).map(it -> String.valueOf(it).toLowerCase()).orElse(null);
 		String buildNumber = ofNullable(csvInfo.getBuildInfo()).map(it -> String.valueOf(it.getNumber())).orElse(null);
 		String pullNumber = ofNullable(csvInfo.getLeadTimeInfo().getPullNumber()).map(String::valueOf).orElse(null);
+		String pipelineTitle = csvInfo.getLeadTimeInfo().getPipelineTitle();
+		String prTitle = csvInfo.getLeadTimeInfo().getPrTitle();
 
 		String state = ofNullable(csvInfo.getPiplineStatus()).map(it -> it.equals(CANCELED_STATUS) ? CANCELED_STATUS
 				: ofNullable(csvInfo.getDeployInfo()).map(DeployInfo::getState).orElse(null))
@@ -129,8 +132,8 @@ public class CSVFileGenerator {
 		String isRevert = leadTimeInfo.getIsRevert() == null ? "" : String.valueOf(leadTimeInfo.getIsRevert());
 
 		return new String[] { organization, pipelineName, repoName, stepName, valid, buildNumber, pullNumber,
-				committerName, creatorName, firstCommitTimeInPr, prCreatedTime, prMergedTime, noPRCommitTime,
-				jobStartTime, pipelineStartTime, pipelineFinishTime, nonWorkdays, totalTime, prLeadTime,
+				pipelineTitle, prTitle, committerName, creatorName, firstCommitTimeInPr, prCreatedTime, prMergedTime,
+				noPRCommitTime, jobStartTime, pipelineStartTime, pipelineFinishTime, nonWorkdays, totalTime, prLeadTime,
 				pipelineLeadTime, state, branch, isRevert };
 	}
 
