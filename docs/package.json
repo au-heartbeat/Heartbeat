@@ -98,7 +98,7 @@
     "unist-util-visit": "^5.0.0",
     "unist-util-walker": "^1.0.0",
     "vfile": "^6.0.1",
-    "vitest": "^1.6.0"
+    "vitest": "^3.2.6"
   },
   "dependencies": {
     "@akebifiky/remark-simple-plantuml": "^1.0.2",
