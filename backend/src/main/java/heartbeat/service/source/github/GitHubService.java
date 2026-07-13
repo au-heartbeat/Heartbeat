@@ -36,9 +36,11 @@ import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -74,16 +76,45 @@ public class GitHubService {
 
 	private final WorkDay workDay;
 
+	@Value("${github.url}")
+	private String defaultGitHubSite;
+
+	private String getDefaultGitHubSite() {
+		return ofNullable(defaultGitHubSite).filter(it -> !it.isBlank()).orElse("https://api.github.com");
+	}
+
+	private String normalizeSite(String site) {
+		String normalizedSite = ofNullable(site).map(String::trim).orElse("");
+		if (normalizedSite.isEmpty()) {
+			return getDefaultGitHubSite();
+		}
+		if (!normalizedSite.startsWith("http://") && !normalizedSite.startsWith("https://")) {
+			normalizedSite = "https://" + normalizedSite;
+		}
+		normalizedSite = normalizedSite.replaceAll("/+$", "");
+		if (normalizedSite.contains("api.github.com")) {
+			return normalizedSite;
+		}
+		if (!normalizedSite.endsWith("/api/v3")) {
+			normalizedSite = normalizedSite + "/api/v3";
+		}
+		return normalizedSite;
+	}
+
+	private URI resolveSiteUri(String site) {
+		return URI.create(normalizeSite(site));
+	}
+
 	@PreDestroy
 	public void shutdownExecutor() {
 		customTaskExecutor.shutdown();
 	}
 
-	public void verifyToken(String githubToken) {
+	public void verifyToken(String githubToken, String site) {
 		try {
 			String token = TOKEN_TITLE + githubToken;
 			log.info("Start to request github with token");
-			gitHubFeignClient.verifyToken(token);
+			gitHubFeignClient.verifyToken(resolveSiteUri(site), token);
 			log.info("Successfully verify token from github");
 		}
 		catch (RuntimeException e) {
@@ -97,11 +128,13 @@ public class GitHubService {
 		}
 	}
 
-	public void verifyCanReadTargetBranch(String repository, String branch, String githubToken) {
+	public void verifyCanReadTargetBranch(String repository, String branch, String githubToken, String site) {
 		try {
 			String token = TOKEN_TITLE + githubToken;
-			log.info("Start to request github branch: {}", branch);
-			gitHubFeignClient.verifyCanReadTargetBranch(GithubUtil.getGithubUrlFullName(repository), branch, token);
+			URI uri = resolveSiteUri(site);
+			String fullName = GithubUtil.getGithubUrlFullName(repository);
+			log.info("Start to request github branch: {}, uri: {}, repository: {}", branch, uri, fullName);
+			gitHubFeignClient.verifyCanReadTargetBranch(uri, fullName, branch, token);
 			log.info("Successfully verify target branch for github, branch: {}", branch);
 		}
 		catch (NotFoundException e) {
@@ -131,6 +164,7 @@ public class GitHubService {
 			Map<String, String> repositories, String token, GenerateReportRequest request) {
 		try {
 			String realToken = BEARER_TITLE + token;
+			String site = ofNullable(request.getCodebaseSetting()).map(it -> it.getSite()).orElse(null);
 			List<PipelineInfoOfRepository> pipelineInfoOfRepositories = getInfoOfRepositories(deployTimes,
 					repositories);
 
@@ -140,7 +174,8 @@ public class GitHubService {
 						return CompletableFuture.completedFuture(PipelineLeadTime.builder().build());
 					}
 
-					List<CompletableFuture<LeadTime>> leadTimeFutures = getLeadTimeFutures(realToken, item, request);
+					List<CompletableFuture<LeadTime>> leadTimeFutures = getLeadTimeFutures(realToken, item, request,
+							site);
 
 					CompletableFuture<List<LeadTime>> allLeadTimesFuture = CompletableFuture
 						.allOf(leadTimeFutures.toArray(new CompletableFuture[0]))
@@ -172,19 +207,19 @@ public class GitHubService {
 	}
 
 	private List<CompletableFuture<LeadTime>> getLeadTimeFutures(String realToken, PipelineInfoOfRepository item,
-			GenerateReportRequest request) {
+			GenerateReportRequest request, String site) {
 		return item.getPassedDeploy().stream().map(deployInfo -> {
 			CompletableFuture<List<PullRequestInfo>> pullRequestInfoFuture = CompletableFuture.supplyAsync(() -> {
 				try {
-					return gitHubFeignClient.getPullRequestListInfo(item.getRepository(), deployInfo.getCommitId(),
-							realToken);
+					return gitHubFeignClient.getPullRequestListInfo(resolveSiteUri(site), item.getRepository(),
+							deployInfo.getCommitId(), realToken);
 				}
 				catch (NotFoundException e) {
 					return Collections.emptyList();
 				}
 			});
 			return pullRequestInfoFuture.thenApply(pullRequestInfos -> getLeadTimeByPullRequest(realToken, item,
-					deployInfo, pullRequestInfos, request));
+					deployInfo, pullRequestInfos, request, site));
 		}).filter(Objects::nonNull).toList();
 	}
 
@@ -207,8 +242,8 @@ public class GitHubService {
 	}
 
 	private LeadTime getLeadTimeByPullRequest(String realToken, PipelineInfoOfRepository item, DeployInfo deployInfo,
-			List<PullRequestInfo> pullRequestInfos, GenerateReportRequest request) {
-		LeadTime noPrLeadTime = parseNoMergeLeadTime(deployInfo, item, realToken);
+			List<PullRequestInfo> pullRequestInfos, GenerateReportRequest request, String site) {
+		LeadTime noPrLeadTime = parseNoMergeLeadTime(deployInfo, item, realToken, site);
 		if (pullRequestInfos.isEmpty()) {
 			return noPrLeadTime;
 		}
@@ -222,8 +257,8 @@ public class GitHubService {
 			return noPrLeadTime;
 		}
 
-		List<CommitInfo> commitInfos = gitHubFeignClient.getPullRequestCommitInfo(item.getRepository(),
-				mergedPull.get().getNumber().toString(), realToken);
+		List<CommitInfo> commitInfos = gitHubFeignClient.getPullRequestCommitInfo(resolveSiteUri(site),
+				item.getRepository(), mergedPull.get().getNumber().toString(), realToken);
 		CommitInfo firstCommitInfo = commitInfos.get(0);
 		if (!mergedPull.get().getMergeCommitSha().equals(deployInfo.getCommitId())) {
 			return noPrLeadTime;
@@ -231,7 +266,8 @@ public class GitHubService {
 		return mapLeadTimeWithInfo(mergedPull.get(), deployInfo, firstCommitInfo, request);
 	}
 
-	private LeadTime parseNoMergeLeadTime(DeployInfo deployInfo, PipelineInfoOfRepository item, String realToken) {
+	private LeadTime parseNoMergeLeadTime(DeployInfo deployInfo, PipelineInfoOfRepository item, String realToken,
+			String site) {
 		long jobFinishTime = Instant.parse(deployInfo.getJobFinishTime()).toEpochMilli();
 		long jobStartTime = Instant.parse(deployInfo.getJobStartTime()).toEpochMilli();
 		long pipelineCreateTime = Instant.parse(deployInfo.getPipelineCreateTime()).toEpochMilli();
@@ -239,7 +275,8 @@ public class GitHubService {
 		long firstCommitTime;
 		CommitInfo commitInfo = new CommitInfo();
 		try {
-			commitInfo = gitHubFeignClient.getCommitInfo(item.getRepository(), deployInfo.getCommitId(), realToken);
+			commitInfo = gitHubFeignClient.getCommitInfo(resolveSiteUri(site), item.getRepository(),
+					deployInfo.getCommitId(), realToken);
 		}
 		catch (Exception e) {
 			log.error("Failed to get commit info_repoId: {},commitId: {}, error: {}", item.getRepository(),
@@ -357,7 +394,8 @@ public class GitHubService {
 		try {
 			String realToken = BEARER_TITLE + token;
 			log.info("Start to get commit info, repoId: {},commitId: {}", repositoryId, commitId);
-			CommitInfo commitInfo = gitHubFeignClient.getCommitInfo(repositoryId, commitId, realToken);
+			CommitInfo commitInfo = gitHubFeignClient.getCommitInfo(resolveSiteUri(null), repositoryId, commitId,
+					realToken);
 			log.info("Successfully get commit info, repoId: {},commitId: {}, author: {}", repositoryId, commitId,
 					commitInfo.getCommit().getAuthor());
 			return commitInfo;
@@ -377,12 +415,13 @@ public class GitHubService {
 		}
 	}
 
-	public List<String> getAllOrganizations(String token) {
+	public List<String> getAllOrganizations(String token, String site) {
 		log.info("Start to get all organizations");
 		int initPage = 1;
 		String realToken = BEARER_TITLE + token;
-		PageOrganizationsInfoDTO pageOrganizationsInfoDTO = cachePageService.getGitHubOrganizations(realToken, initPage,
-				PER_PAGE);
+		String normalizedSite = normalizeSite(site);
+		PageOrganizationsInfoDTO pageOrganizationsInfoDTO = cachePageService.getGitHubOrganizations(realToken,
+				normalizedSite, initPage, PER_PAGE);
 		List<OrganizationsInfoDTO> firstPageStepsInfo = pageOrganizationsInfoDTO.getPageInfo();
 		int totalPage = pageOrganizationsInfoDTO.getTotalPage();
 		log.info("Successfully parse the total page_total page of organizations: {}", totalPage);
@@ -395,7 +434,8 @@ public class GitHubService {
 				List<OrganizationsInfoDTO> organizationNamesOtherFirstPageList = IntStream
 					.range(i, Math.min(i + BATCH_SIZE, totalPage + 1))
 					.parallel()
-					.mapToObj(page -> cachePageService.getGitHubOrganizations(realToken, page, PER_PAGE).getPageInfo())
+					.mapToObj(page -> cachePageService.getGitHubOrganizations(realToken, normalizedSite, page, PER_PAGE)
+						.getPageInfo())
 					.flatMap(Collection::stream)
 					.toList();
 				List<String> orgNamesOtherFirstPage = organizationNamesOtherFirstPageList.stream()
@@ -408,13 +448,14 @@ public class GitHubService {
 		return organizationNames;
 	}
 
-	public List<String> getAllRepos(String token, String organization, long endTime) {
+	public List<String> getAllRepos(String token, String organization, long endTime, String site) {
 		log.info("Start to get all repos, organization: {}, endTime: {}", organization, endTime);
 		Instant endTimeInstant = Instant.ofEpochMilli(endTime);
 		int initPage = 1;
 		String realToken = BEARER_TITLE + token;
-		PageReposInfoDTO pageReposInfoDTO = cachePageService.getGitHubRepos(realToken, organization, initPage,
-				PER_PAGE);
+		String normalizedSite = normalizeSite(site);
+		PageReposInfoDTO pageReposInfoDTO = cachePageService.getGitHubRepos(realToken, normalizedSite, organization,
+				initPage, PER_PAGE);
 		List<ReposInfoDTO> firstPageStepsInfo = pageReposInfoDTO.getPageInfo();
 		int totalPage = pageReposInfoDTO.getTotalPage();
 		log.info("Successfully parse the total page_total page of repos: {}", totalPage);
@@ -430,7 +471,8 @@ public class GitHubService {
 				List<ReposInfoDTO> repoNamesOtherFirstPageList = IntStream
 					.range(i, Math.min(i + BATCH_SIZE, totalPage + 1))
 					.parallel()
-					.mapToObj(page -> cachePageService.getGitHubRepos(realToken, organization, page, PER_PAGE)
+					.mapToObj(page -> cachePageService
+						.getGitHubRepos(realToken, normalizedSite, organization, page, PER_PAGE)
 						.getPageInfo())
 					.flatMap(Collection::stream)
 					.filter(it -> Instant.parse(it.getCreatedAt()).isBefore(endTimeInstant))
@@ -443,12 +485,13 @@ public class GitHubService {
 		return repoNames;
 	}
 
-	public List<String> getAllBranches(String token, String organization, String repo) {
+	public List<String> getAllBranches(String token, String organization, String repo, String site) {
 		log.info("Start to get all branches, organization: {}, repo: {}", organization, repo);
 		int initPage = 1;
 		String realToken = BEARER_TITLE + token;
-		PageBranchesInfoDTO pageBranchesInfoDTO = cachePageService.getGitHubBranches(realToken, organization, repo,
-				initPage, PER_PAGE);
+		String normalizedSite = normalizeSite(site);
+		PageBranchesInfoDTO pageBranchesInfoDTO = cachePageService.getGitHubBranches(realToken, normalizedSite,
+				organization, repo, initPage, PER_PAGE);
 		List<BranchesInfoDTO> firstPageStepsInfo = pageBranchesInfoDTO.getPageInfo();
 		int totalPage = pageBranchesInfoDTO.getTotalPage();
 		log.info("Successfully parse the total page_total page of branches: {}", totalPage);
@@ -461,7 +504,8 @@ public class GitHubService {
 				List<BranchesInfoDTO> branchNamesOtherFirstPageList = IntStream
 					.range(i, Math.min(i + BATCH_SIZE, totalPage + 1))
 					.parallel()
-					.mapToObj(page -> cachePageService.getGitHubBranches(realToken, organization, repo, page, PER_PAGE)
+					.mapToObj(page -> cachePageService
+						.getGitHubBranches(realToken, normalizedSite, organization, repo, page, PER_PAGE)
 						.getPageInfo())
 					.flatMap(Collection::stream)
 					.toList();
@@ -476,12 +520,12 @@ public class GitHubService {
 	}
 
 	public List<String> getAllCrews(String token, String organization, String repo, String branch, long startTime,
-			long endTime) {
+			long endTime, String site) {
 		log.info("Start to get all crews, organization: {}, repo: {}, branch: {}, startTime: {}, endTime: {}",
 				organization, repo, branch, startTime, endTime);
 		String realToken = BEARER_TITLE + token;
 		List<PullRequestInfo> validPullRequestInfo = getValidPullRequestInfo(realToken, organization, repo, branch,
-				startTime, endTime);
+				startTime, endTime, site);
 		List<String> crews = validPullRequestInfo.stream()
 			.map(PullRequestInfo::getUser)
 			.map(PullRequestInfo.PullRequestUser::getLogin)
@@ -527,6 +571,7 @@ public class GitHubService {
 		long startTime = Long.parseLong(request.getStartTime());
 		long endTime = Long.parseLong(request.getEndTime());
 		String token = ofNullable(request.getCodebaseSetting().getToken()).orElse("");
+		String site = ofNullable(request.getCodebaseSetting().getSite()).orElse(null);
 		String realToken = BEARER_TITLE + token;
 		List<String> crews = request.getCodebaseSetting().getCrews();
 
@@ -539,7 +584,7 @@ public class GitHubService {
 				List<String> branches = codeBase.getBranches();
 				return branches.stream().map(branch -> {
 					List<LeadTime> leadTimes = getValidPullRequestInfo(realToken, organization, repo, branch, startTime,
-							endTime)
+							endTime, site)
 						.stream()
 						.filter(pullRequestInfo -> {
 							if (crews.isEmpty()) {
@@ -553,8 +598,8 @@ public class GitHubService {
 							log.info("Start to get first code commit, organization: {}, repo: {}, pull number: {}",
 									organization, repo, pullNumber);
 							CommitInfo firstCodeCommit = gitHubFeignClient
-								.getPullRequestCommitInfo(String.format("%s/%s", organization, repo), pullNumber,
-										realToken)
+								.getPullRequestCommitInfo(resolveSiteUri(site),
+										String.format("%s/%s", organization, repo), pullNumber, realToken)
 								.get(0);
 							log.info(
 									"Successfully to get first code commit, organization: {}, repo: {}, pull number: {}",
@@ -579,14 +624,15 @@ public class GitHubService {
 	}
 
 	private List<PullRequestInfo> getValidPullRequestInfo(String realToken, String organization, String repo,
-			String branch, long startTime, long endTime) {
+			String branch, long startTime, long endTime, String site) {
 		log.info("Start to get all pull request, organization: {}, repo: {}, branch: {}, startTime: {}, endTime: {}",
 				organization, repo, branch, startTime, endTime);
 		int initPage = 1;
+		String normalizedSite = normalizeSite(site);
 
 		List<PullRequestInfo> pullRequestInfoList = new ArrayList<>();
-		PagePullRequestInfo pagePullRequestInfo = cachePageService.getGitHubPullRequest(realToken, organization, repo,
-				branch, initPage, PER_PAGE);
+		PagePullRequestInfo pagePullRequestInfo = cachePageService.getGitHubPullRequest(realToken, normalizedSite,
+				organization, repo, branch, initPage, PER_PAGE);
 		List<PullRequestInfo> firstPageStepsInfo = pagePullRequestInfo.getPageInfo();
 		int totalPage = pagePullRequestInfo.getTotalPage();
 		log.info("Successfully parse the total page_total page of pull requests: {}", totalPage);
@@ -601,7 +647,7 @@ public class GitHubService {
 						.range(i, Math.min(i + BATCH_SIZE, totalPage + 1))
 						.parallel()
 						.mapToObj(page -> cachePageService
-							.getGitHubPullRequest(realToken, organization, repo, branch, page, PER_PAGE)
+							.getGitHubPullRequest(realToken, normalizedSite, organization, repo, branch, page, PER_PAGE)
 							.getPageInfo())
 						.map(it -> filterPullRequestByTimeRange(it, startTime, endTime))
 						.toList();

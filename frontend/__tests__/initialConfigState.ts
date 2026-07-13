@@ -46,6 +46,7 @@ const initialConfigState: BasicConfigState = {
   sourceControl: {
     config: {
       type: SourceControlTypes.GitHub,
+      site: '',
       token: '',
     },
     isShow: false,

@@ -3,6 +3,7 @@ import { SourceControlTypes } from '@src/constants/resources';
 export interface SourceControlVerifyRequestDTO {
   type: SourceControlTypes;
   token: string;
+  site?: string;
 }
 
 export interface SourceControlInfoRequestDTO {
@@ -10,11 +11,13 @@ export interface SourceControlInfoRequestDTO {
   branch: string;
   repository: string;
   token: string;
+  site?: string;
 }
 
 export interface SourceControlGetOrganizationRequestDTO {
   token: string;
   type: SourceControlTypes;
+  site?: string;
 }
 
 export interface SourceControlGetRepoRequestDTO {
@@ -22,6 +25,7 @@ export interface SourceControlGetRepoRequestDTO {
   organization: string;
   endTime: number;
   type: SourceControlTypes;
+  site?: string;
 }
 
 export interface SourceControlGetBranchRequestDTO {
@@ -29,6 +33,7 @@ export interface SourceControlGetBranchRequestDTO {
   organization: string;
   repo: string;
   type: SourceControlTypes;
+  site?: string;
 }
 
 export interface SourceControlGetCrewRequestDTO {
@@ -39,4 +44,5 @@ export interface SourceControlGetCrewRequestDTO {
   startTime: number;
   endTime: number;
   type: SourceControlTypes;
+  site?: string;
 }

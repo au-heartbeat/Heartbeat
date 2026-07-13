@@ -33,7 +33,7 @@ export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceContr
 
   function getEnumKeyByEnumValue(enumValue: string): SourceControlTypes {
     return Object.entries(SourceControlTypes)
-      .filter((it) => it[0] === enumValue)
+      .filter((it) => it[1] === enumValue)
       .map((it) => it[1])[0];
   }
 
@@ -60,6 +60,7 @@ export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceContr
         const params = {
           type: getEnumKeyByEnumValue(restoredSourceControlInfo.type),
           token: restoredSourceControlInfo.token,
+          site: restoredSourceControlInfo.site,
           organization: organization,
           endTime: dayjs(dateRange.endDate).startOf('date').valueOf(),
         };

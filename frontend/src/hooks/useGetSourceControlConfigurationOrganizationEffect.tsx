@@ -42,7 +42,7 @@ export const useGetSourceControlConfigurationOrganizationEffect =
 
     function getEnumKeyByEnumValue(enumValue: string): SourceControlTypes {
       return Object.entries(SourceControlTypes)
-        .filter((it) => it[0] === enumValue)
+        .filter((it) => it[1] === enumValue)
         .map((it) => it[1])[0];
     }
 
@@ -50,6 +50,7 @@ export const useGetSourceControlConfigurationOrganizationEffect =
       const params = {
         type: getEnumKeyByEnumValue(restoredSourceControlInfo.type),
         token: restoredSourceControlInfo.token,
+        site: restoredSourceControlInfo.site,
       };
       setIsLoading(true);
       dispatch(

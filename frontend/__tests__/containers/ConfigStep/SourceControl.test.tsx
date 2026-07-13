@@ -99,10 +99,8 @@ describe('SourceControl', () => {
 
     await userEvent.click(screen.getByRole('button', { name: VERIFY }));
 
-    await waitFor(async () => {
-      expect(screen.getByRole('button', { name: RESET })).toBeTruthy();
-      await userEvent.click(screen.getByRole('button', { name: RESET }));
-    });
+    const resetButton = await screen.findByRole('button', { name: RESET });
+    await userEvent.click(resetButton);
 
     expect(onReset).toHaveBeenCalledTimes(1);
     expect(onSetResetFields).toHaveBeenCalledTimes(1);

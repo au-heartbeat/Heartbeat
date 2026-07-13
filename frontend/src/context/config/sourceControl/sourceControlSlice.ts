@@ -2,7 +2,7 @@ import { initSourceControlVerifyResponseState, ISourceControlVerifyResponse } fr
 import { SourceControlTypes } from '@src/constants/resources';
 
 export interface ISourceControl {
-  config: { type: string; token: string };
+  config: { type: string; site: string; token: string };
   isShow: boolean;
   verifiedResponse: ISourceControlVerifyResponse;
 }
@@ -10,6 +10,7 @@ export interface ISourceControl {
 export const initialSourceControlState: ISourceControl = {
   config: {
     type: SourceControlTypes.GitHub,
+    site: '',
     token: '',
   },
   isShow: false,

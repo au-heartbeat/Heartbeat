@@ -58,6 +58,7 @@ describe('use verify sourceControl token', () => {
     expect(resetSpy).toHaveBeenCalledWith(
       {
         type: 'GitHub',
+        site: '',
         token: '',
       },
       { keepValues: true },
@@ -113,6 +114,7 @@ describe('use verify sourceControl token', () => {
 
     expect(resetSpy).toHaveBeenCalledWith({
       type: 'GitHub',
+      site: '',
       token: '',
     });
   });

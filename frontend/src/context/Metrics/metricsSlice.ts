@@ -646,9 +646,9 @@ export const metricsSlice = createSlice({
         pipelineList.filter((pipeline: IPipeline) => pipeline.orgName.toLowerCase() === organization.toLowerCase());
       const filteredPipelineNames = (organization: string) =>
         filteredPipelines(organization).map((item: IPipeline) => item.name);
-      const filteredPipelineRepoName = (organization: string): string => {
-        const repoNames = filteredPipelines(organization).map((item: IPipeline) => item.repoName);
-        return repoNames.length > 0 ? repoNames[0] : '';
+      const filteredPipelineRepoName = (organization: string, pipelineName: string): string => {
+        const pipeline = filteredPipelines(organization).find((item: IPipeline) => item.name === pipelineName);
+        return pipeline?.repoName || '';
       };
 
       const uniqueResponse = (res: IPipelineConfig[]) => {
@@ -678,10 +678,12 @@ export const metricsSlice = createSlice({
             ? pipelines.map(({ id, organization, pipelineName, step, branches, isStepEmptyString }) => {
                 const matchedOrganization =
                   orgNames.find((i) => (i as string).toLowerCase() === organization.toLowerCase()) || '';
-                const matchedPipelineName = filteredPipelineNames(organization).includes(pipelineName)
+                const matchedPipelineName = filteredPipelineNames(matchedOrganization).includes(pipelineName)
                   ? pipelineName
                   : '';
-                const matchedRepoName = filteredPipelineRepoName(organization);
+                const matchedRepoName = matchedPipelineName
+                  ? filteredPipelineRepoName(matchedOrganization, matchedPipelineName)
+                  : '';
                 return {
                   id,
                   isStepEmptyString: isStepEmptyString || false,

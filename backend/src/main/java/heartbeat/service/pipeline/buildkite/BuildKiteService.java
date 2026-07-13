@@ -291,6 +291,7 @@ public class BuildKiteService {
 			log.info("Start to query BuildKite pipelineInfo by organizations slug: {}", buildKiteOrganizationsInfo);
 			List<Pipeline> buildKiteInfoList = buildKiteOrganizationsInfo.stream()
 				.flatMap(org -> getPipelineInfoList(org, buildKiteToken).stream()
+					.filter(pipeline -> pipeline.getSteps() != null)
 					.map(pipeline -> PipelineTransformer.fromBuildKitePipelineDto(pipeline, org.getSlug(),
 							org.getName())))
 				.toList();

@@ -48,6 +48,13 @@ export const PipelineConfiguration = () => {
       const repoName = filteredRepoNames.length > 0 ? filteredRepoNames[0] : '';
       dispatch(updatePipelineSetting({ updateId: id, label: 'repoName', value: repoName }));
     }
+    if (label.toLowerCase() === 'pipeline name') {
+      const currentSetting = deploymentFrequencySettings.find((s) => s.id === id);
+      const pipeline = pipelineInfoResult.data?.pipelineList.find(
+        (it) => it.name === value && it.orgName === currentSetting?.organization,
+      );
+      dispatch(updatePipelineSetting({ updateId: id, label: 'repoName', value: pipeline?.repoName ?? '' }));
+    }
   };
 
   const totalPipelineNumber = realDeploymentFrequencySettings.length;

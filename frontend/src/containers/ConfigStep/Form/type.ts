@@ -1,6 +1,6 @@
 export type TBoardFieldKeys = 'type' | 'boardId' | 'email' | 'site' | 'token';
 export type TPipelineToolFieldKeys = 'type' | 'token';
-export type TSourceControlFieldKeys = 'type' | 'token';
+export type TSourceControlFieldKeys = 'type' | 'site' | 'token';
 export type TBasicInfoFieldKeys = 'projectName' | 'calendarType' | 'dateRange' | 'metrics';
 
 export interface IDateRangeErrorMessage {
@@ -59,6 +59,9 @@ export interface IPipelineToolErrorMessage
 }
 export interface ISourceControlErrorMessage
   extends Record<Exclude<TSourceControlFieldKeys, 'type'>, Record<string, string>> {
+  site: {
+    required: string;
+  };
   token: {
     required: string;
     invalid: string;

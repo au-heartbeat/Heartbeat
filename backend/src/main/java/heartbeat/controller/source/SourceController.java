@@ -37,8 +37,6 @@ import java.util.Objects;
 @Log4j2
 public class SourceController {
 
-	public static final String TOKEN_PATTER = "^(ghp|gho|ghu|ghs|ghr)_([a-zA-Z0-9]{36})$";
-
 	private final GitHubService gitHubService;
 
 	@PostMapping("/{sourceType}/verify")
@@ -47,7 +45,7 @@ public class SourceController {
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable SourceType sourceType,
 			@RequestBody @Valid SourceControlDTO sourceControlDTO) {
 		log.info("Start to verify source type: {} token.", sourceType);
-		gitHubService.verifyToken(sourceControlDTO.getToken());
+		gitHubService.verifyToken(sourceControlDTO.getToken(), sourceControlDTO.getSite());
 		log.info("Successfully verify source type: {} token.", sourceType);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
@@ -58,7 +56,8 @@ public class SourceController {
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable SourceType sourceType,
 			@RequestBody @Valid VerifyBranchRequest request) {
 		log.info("Start to verify source type: {} branch: {}.", sourceType, request.getBranch());
-		gitHubService.verifyCanReadTargetBranch(request.getRepository(), request.getBranch(), request.getToken());
+		gitHubService.verifyCanReadTargetBranch(request.getRepository(), request.getBranch(), request.getToken(),
+				request.getSite());
 		log.info("Successfully verify source type: {} branch: {}.", sourceType, request.getBranch());
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
@@ -69,7 +68,8 @@ public class SourceController {
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable SourceType sourceType,
 			@RequestBody @Valid OrganizationRequest organizationRequest) {
 		log.info("Start to get organizations, source type: {}", sourceType);
-		List<String> allOrganizations = gitHubService.getAllOrganizations(organizationRequest.getToken());
+		List<String> allOrganizations = gitHubService.getAllOrganizations(organizationRequest.getToken(),
+				organizationRequest.getSite());
 		log.info("Successfully get organizations, source type: {}", sourceType);
 		return new OrganizationResponse(allOrganizations);
 	}
@@ -81,7 +81,7 @@ public class SourceController {
 			@RequestBody @Valid RepoRequest repoRequest) {
 		log.info("Start to get repos, source type: {}", sourceType);
 		List<String> allRepos = gitHubService.getAllRepos(repoRequest.getToken(), repoRequest.getOrganization(),
-				repoRequest.getEndTime());
+				repoRequest.getEndTime(), repoRequest.getSite());
 		log.info("Successfully get repos, source type: {}", sourceType);
 		return new RepoResponse(allRepos);
 	}
@@ -93,7 +93,7 @@ public class SourceController {
 			@RequestBody @Valid BranchRequest branchRequest) {
 		log.info("Start to get branches, source type: {}", sourceType);
 		List<String> allBranches = gitHubService.getAllBranches(branchRequest.getToken(),
-				branchRequest.getOrganization(), branchRequest.getRepo());
+				branchRequest.getOrganization(), branchRequest.getRepo(), branchRequest.getSite());
 		log.info("Successfully get branches, source type: {}", sourceType);
 		return new BranchResponse(allBranches);
 	}
@@ -105,7 +105,8 @@ public class SourceController {
 			@RequestBody @Valid CrewRequest crewRequest) {
 		log.info("Start to get crews, source type: {}", sourceType);
 		List<String> allCrews = gitHubService.getAllCrews(crewRequest.getToken(), crewRequest.getOrganization(),
-				crewRequest.getRepo(), crewRequest.getBranch(), crewRequest.getStartTime(), crewRequest.getEndTime());
+				crewRequest.getRepo(), crewRequest.getBranch(), crewRequest.getStartTime(), crewRequest.getEndTime(),
+				crewRequest.getSite());
 		log.info("Successfully get crews, source type: {}", sourceType);
 		return new CrewResponse(allCrews);
 	}

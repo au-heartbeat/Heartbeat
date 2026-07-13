@@ -215,6 +215,50 @@ describe('PipelineConfiguration', () => {
     expect(updatePipelineSetting).toHaveBeenCalledTimes(2);
   });
 
+  it('should call updatePipelineSetting to update repoName when select pipeline name', async () => {
+    mockSelectPipelineNames = ['Heartbeat'];
+    mockSelectedPipelineSettings = [
+      { id: 0, organization: 'Thoughtworks-Heartbeat', pipelineName: '', steps: '', branches: [] },
+    ];
+    const { getAllByRole, getByRole } = setup();
+
+    await act(async () => {
+      await userEvent.click(getAllByRole('button', { name: LIST_OPEN })[1]);
+    });
+    const listBox = within(getByRole('listbox'));
+    await act(async () => {
+      await userEvent.click(listBox.getByText('Heartbeat'));
+    });
+
+    expect(updatePipelineSetting).toHaveBeenCalledWith({
+      updateId: 0,
+      label: 'repoName',
+      value: 'au-heartbeat/Heartbeat',
+    });
+  });
+
+  it('should set repoName to empty when selected pipeline name is not found in pipeline list', async () => {
+    mockSelectPipelineNames = ['NonExistent'];
+    mockSelectedPipelineSettings = [
+      { id: 0, organization: 'Thoughtworks-Heartbeat', pipelineName: '', steps: '', branches: [] },
+    ];
+    const { getAllByRole, getByRole } = setup();
+
+    await act(async () => {
+      await userEvent.click(getAllByRole('button', { name: LIST_OPEN })[1]);
+    });
+    const listBox = within(getByRole('listbox'));
+    await act(async () => {
+      await userEvent.click(listBox.getByText('NonExistent'));
+    });
+
+    expect(updatePipelineSetting).toHaveBeenCalledWith({
+      updateId: 0,
+      label: 'repoName',
+      value: '',
+    });
+  });
+
   it('should call updatePipelineSetting function and clearErrorMessages function when select organization and pipeline info is undefined', async () => {
     mockGetPipelineToolInfoSpy = {
       ...mockGetPipelineToolInfoOkResponse,

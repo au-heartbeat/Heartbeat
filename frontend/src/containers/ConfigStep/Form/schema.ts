@@ -10,6 +10,7 @@ import {
   SOURCE_CONTROL_ERROR_MESSAGE,
   AGGREGATED_DATE_ERROR_REASON,
 } from '@src/containers/ConfigStep/Form/literal';
+import { SourceControlTypes } from '@src/constants/resources';
 import { object, string, mixed, InferType, array } from 'yup';
 import { REGEX } from '@src/constants/regex';
 
@@ -90,9 +91,19 @@ export const pipelineToolSchema = object().shape({
 
 export const sourceControlSchema = object().shape({
   type: mixed().oneOf(SOURCE_CONTROL_TYPE_LITERAL),
+  site: string().when('type', {
+    is: SourceControlTypes.GitHubEnterprise,
+    then: (schema) => schema.required(SOURCE_CONTROL_ERROR_MESSAGE.site.required),
+    otherwise: (schema) => schema.notRequired(),
+  }),
   token: string()
     .required(SOURCE_CONTROL_ERROR_MESSAGE.token.required)
-    .matches(REGEX.GITHUB_TOKEN, { message: SOURCE_CONTROL_ERROR_MESSAGE.token.invalid }),
+    .when('type', {
+      is: SourceControlTypes.GitHubEnterprise,
+      then: (schema) => schema,
+      otherwise: (schema) =>
+        schema.matches(REGEX.GITHUB_TOKEN, { message: SOURCE_CONTROL_ERROR_MESSAGE.token.invalid }),
+    }),
 });
 
 export type IBasicInfoData = InferType<typeof basicInfoSchema>;

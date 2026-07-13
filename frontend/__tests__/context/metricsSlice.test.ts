@@ -844,6 +844,7 @@ describe('saveMetricsSetting reducer', () => {
               organization: 'mockOrganization1',
               pipelineName: 'mockPipelineName1',
               step: 'mockStep1',
+              repoName: '',
               branches: [],
             },
             {
@@ -851,6 +852,7 @@ describe('saveMetricsSetting reducer', () => {
               organization: 'mockOrganization1',
               pipelineName: '',
               step: '',
+              repoName: '',
               branches: [],
             },
           ],
@@ -925,6 +927,7 @@ describe('saveMetricsSetting reducer', () => {
               organization: 'mockOrganization1',
               pipelineName: 'mockPipelineName1',
               step: 'mockStep1',
+              repoName: '',
               branches: [],
             },
             {
@@ -932,6 +935,7 @@ describe('saveMetricsSetting reducer', () => {
               organization: 'mockOrganization1',
               pipelineName: '',
               step: '',
+              repoName: '',
               branches: [],
             },
           ],
@@ -1020,6 +1024,97 @@ describe('saveMetricsSetting reducer', () => {
         expect(savedMetricsSetting.pipelineSettings).toEqual(expectSetting.pipelineSettings);
         expect(savedMetricsSetting.deploymentWarningMessage).toEqual(expectSetting.deploymentWarningMessage);
       });
+    });
+
+    it('should map repoName by pipelineName instead of organization default when importing', () => {
+      const savedMetricsSetting = saveMetricsSettingReducer(
+        {
+          ...initState,
+          importedData: {
+            ...initState.importedData,
+            importedPipelineSettings: [
+              {
+                id: 0,
+                organization: 'REA Group',
+                pipelineName: 'finx/lead-franchise-matching-service',
+                step: 'Deploy to Prod',
+                repoName: 'financial-experiences/lead-franchise-matching-service',
+                branches: ['main'],
+                isStepEmptyString: false,
+              },
+              {
+                id: 1,
+                organization: 'REA Group',
+                pipelineName: 'finx/lead-broker-matching-service',
+                step: '',
+                repoName: 'financial-experiences/lead-broker-matching-service',
+                branches: ['main'],
+                isStepEmptyString: true,
+              },
+            ],
+          },
+        },
+        updatePipelineSettings({
+          pipelineList: [
+            {
+              id: '1',
+              name: 'finx/lead-franchise-matching-service',
+              orgId: 'org-1',
+              orgName: 'REA Group',
+              repository: 'financial-experiences/lead-franchise-matching-service',
+              repoName: 'financial-experiences/lead-franchise-matching-service',
+              steps: ['Deploy to Prod'],
+              branches: ['main'],
+              crews: [],
+            },
+            {
+              id: '2',
+              name: 'finx/lead-broker-matching-service',
+              orgId: 'org-1',
+              orgName: 'REA Group',
+              repository: 'financial-experiences/lead-broker-matching-service',
+              repoName: 'financial-experiences/lead-broker-matching-service',
+              steps: ['Deploy to Prod'],
+              branches: ['main'],
+              crews: [],
+            },
+            {
+              id: '3',
+              name: 'another-pipeline',
+              orgId: 'org-1',
+              orgName: 'REA Group',
+              repository: 'melissa-mcdougall/rea-custodian-roadmaps',
+              repoName: 'melissa-mcdougall/rea-custodian-roadmaps',
+              steps: ['Deploy to Prod'],
+              branches: ['main'],
+              crews: [],
+            },
+          ],
+          isProjectCreated: false,
+          pipelineCrews: [],
+        }),
+      );
+
+      expect(savedMetricsSetting.pipelineSettings).toEqual([
+        {
+          id: 0,
+          isStepEmptyString: false,
+          organization: 'REA Group',
+          pipelineName: 'finx/lead-franchise-matching-service',
+          step: 'Deploy to Prod',
+          repoName: 'financial-experiences/lead-franchise-matching-service',
+          branches: ['main'],
+        },
+        {
+          id: 1,
+          isStepEmptyString: true,
+          organization: 'REA Group',
+          pipelineName: 'finx/lead-broker-matching-service',
+          step: '',
+          repoName: 'financial-experiences/lead-broker-matching-service',
+          branches: ['main'],
+        },
+      ]);
     });
   });
 

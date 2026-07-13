@@ -32,7 +32,10 @@ export const SourceControl = ({
     handleSubmit,
     reset,
     getValues,
+    watch,
   } = useFormContext();
+  const sourceControlType = watch(fields[FieldKey.Type].key);
+  const isGitHubEnterprise = sourceControlType === SourceControlTypes.GitHubEnterprise;
   const isVerifyTimeOut = errors.token?.message === SOURCE_CONTROL_ERROR_MESSAGE.token.timeout;
   const isVerified = isValid && isSubmitSuccessful;
 
@@ -73,6 +76,38 @@ export const SourceControl = ({
           labelId='sourceControl-type-checkbox-label'
           selectLabelId='sourceControl-type-checkbox-label'
         />
+        {isGitHubEnterprise && (
+          <Controller
+            name={fields[FieldKey.Site].key}
+            control={control}
+            render={({ field, fieldState }) => {
+              return (
+                <StyledTextField
+                  {...field}
+                  data-testid='sourceControlHostField'
+                  key={fields[FieldKey.Site].key}
+                  required
+                  label={fields[FieldKey.Site].label}
+                  variant='standard'
+                  inputProps={{ 'aria-label': `input ${fields[FieldKey.Site].key}` }}
+                  onChange={(e) => {
+                    if (isSubmitSuccessful) {
+                      reset(undefined, { keepValues: true, keepErrors: true });
+                    }
+                    const sourceControl: ISourceControlData = {
+                      ...(getValues() as ISourceControlData),
+                      site: e.target.value,
+                    };
+                    dispatch(updateSourceControl(sourceControl));
+                    field.onChange(e.target.value);
+                  }}
+                  error={fieldState.invalid}
+                  helperText={fieldState.error?.message ? fieldState.error?.message : ''}
+                />
+              );
+            }}
+          />
+        )}
         <Controller
           name={fields[FieldKey.Token].key}
           control={control}

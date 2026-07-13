@@ -22,6 +22,7 @@ export interface ReportRequestDTO extends IBasicReportRequestDTO {
   codebaseSetting?: {
     type: string;
     token: string;
+    site?: string;
     crews: string[];
     codebases: {
       branches: string[];

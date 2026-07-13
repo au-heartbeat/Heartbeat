@@ -201,6 +201,7 @@ export const PIPELINE_TOOL_OTHER_OPTION = 'Other';
 
 export enum SourceControlTypes {
   GitHub = 'GitHub',
+  GitHubEnterprise = 'GitHub Enterprise',
 }
 
 export enum PipelineSettingTypes {

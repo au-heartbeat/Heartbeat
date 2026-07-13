@@ -57,7 +57,7 @@ class SourceControllerTest {
 
 	@Test
 	void shouldReturnNoContentStatusWhenVerifyToken() throws Exception {
-		doNothing().when(gitHubService).verifyToken(GITHUB_TOKEN);
+		doNothing().when(gitHubService).verifyToken(GITHUB_TOKEN, null);
 		SourceControlDTO sourceControlDTO = SourceControlDTO.builder().token(GITHUB_TOKEN).build();
 
 		mockMvc
@@ -66,7 +66,7 @@ class SourceControllerTest {
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isNoContent());
 
-		verify(gitHubService, times(1)).verifyToken(GITHUB_TOKEN);
+		verify(gitHubService, times(1)).verifyToken(GITHUB_TOKEN, null);
 	}
 
 	@Test
@@ -76,7 +76,7 @@ class SourceControllerTest {
 			.token(GITHUB_TOKEN)
 			.branch(MAIN_BRANCH)
 			.build();
-		doNothing().when(gitHubService).verifyCanReadTargetBranch(any(), any(), any());
+		doNothing().when(gitHubService).verifyCanReadTargetBranch(any(), any(), any(), any());
 
 		mockMvc
 			.perform(post("/source-control/{sourceType}/repos/branches/verify", NORMAL_SOURCE_TYPE)
@@ -84,7 +84,7 @@ class SourceControllerTest {
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isNoContent());
 
-		verify(gitHubService, times(1)).verifyCanReadTargetBranch(GITHUB_REPOSITORY, MAIN_BRANCH, GITHUB_TOKEN);
+		verify(gitHubService, times(1)).verifyCanReadTargetBranch(GITHUB_REPOSITORY, MAIN_BRANCH, GITHUB_TOKEN, null);
 	}
 
 	@Test
@@ -193,51 +193,11 @@ class SourceControllerTest {
 		assertThat(result).contains("Branch cannot be empty.");
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "12345", EMPTY_BRANCH_NAME, "" })
-	void shouldReturnBadRequestGivenRequestParamPatternIsIncorrectWhenVerifyToken(String token) throws Exception {
-		SourceControlDTO sourceControlDTO = SourceControlDTO.builder().token(token).build();
-
-		final var response = mockMvc
-			.perform(post("/source-control/{sourceType}/verify", NORMAL_SOURCE_TYPE)
-				.content(new ObjectMapper().writeValueAsString(sourceControlDTO))
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isBadRequest())
-			.andReturn()
-			.getResponse();
-
-		final var content = response.getContentAsString();
-		final var result = JsonPath.parse(content).read("$.token").toString();
-		assertThat(result).isEqualTo("token's pattern is incorrect");
-	}
-
-	@ParameterizedTest
-	@ValueSource(strings = { "12345", "   ", "" })
-	void shouldReturnBadRequestGivenRequestParamPatternIsIncorrectWhenVerifyBranch(String token) throws Exception {
-		VerifyBranchRequest request = VerifyBranchRequest.builder()
-			.token(token)
-			.branch(MAIN_BRANCH)
-			.repository(GITHUB_REPOSITORY)
-			.build();
-
-		final var response = mockMvc
-			.perform(post("/source-control/{sourceType}/repos/branches/verify", NORMAL_SOURCE_TYPE)
-				.content(new ObjectMapper().writeValueAsString(request))
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isBadRequest())
-			.andReturn()
-			.getResponse();
-
-		final var content = response.getContentAsString();
-		final var result = JsonPath.parse(content).read("$.token").toString();
-		assertThat(result).isEqualTo("token's pattern is incorrect");
-	}
-
 	@Test
 	void shouldReturnAllOrganizationsWhenAllSuccess() throws Exception {
 		OrganizationRequest request = OrganizationRequest.builder().token(GITHUB_TOKEN).build();
 
-		when(gitHubService.getAllOrganizations(GITHUB_TOKEN)).thenReturn(List.of("test-org1"));
+		when(gitHubService.getAllOrganizations(GITHUB_TOKEN, null)).thenReturn(List.of("test-org1"));
 
 		mockMvc
 			.perform(post("/source-control/{sourceType}/organizations", NORMAL_SOURCE_TYPE)
@@ -249,7 +209,7 @@ class SourceControllerTest {
 			.andReturn()
 			.getResponse();
 
-		verify(gitHubService).getAllOrganizations(GITHUB_TOKEN);
+		verify(gitHubService).getAllOrganizations(GITHUB_TOKEN, null);
 	}
 
 	@Test
@@ -262,7 +222,8 @@ class SourceControllerTest {
 			.endTime(endTime)
 			.build();
 
-		when(gitHubService.getAllRepos(GITHUB_TOKEN, mockOrganization, endTime)).thenReturn(List.of("test-repo1"));
+		when(gitHubService.getAllRepos(GITHUB_TOKEN, mockOrganization, endTime, null))
+			.thenReturn(List.of("test-repo1"));
 
 		mockMvc
 			.perform(post("/source-control/{sourceType}/repos", NORMAL_SOURCE_TYPE)
@@ -274,7 +235,7 @@ class SourceControllerTest {
 			.andReturn()
 			.getResponse();
 
-		verify(gitHubService).getAllRepos(GITHUB_TOKEN, mockOrganization, endTime);
+		verify(gitHubService).getAllRepos(GITHUB_TOKEN, mockOrganization, endTime, null);
 	}
 
 	@Test
@@ -287,7 +248,7 @@ class SourceControllerTest {
 			.organization(mockOrganization)
 			.build();
 
-		when(gitHubService.getAllBranches(GITHUB_TOKEN, mockOrganization, mockRepo))
+		when(gitHubService.getAllBranches(GITHUB_TOKEN, mockOrganization, mockRepo, null))
 			.thenReturn(List.of("test-branch1"));
 
 		mockMvc
@@ -300,7 +261,7 @@ class SourceControllerTest {
 			.andReturn()
 			.getResponse();
 
-		verify(gitHubService).getAllBranches(GITHUB_TOKEN, mockOrganization, mockRepo);
+		verify(gitHubService).getAllBranches(GITHUB_TOKEN, mockOrganization, mockRepo, null);
 	}
 
 	@Test
@@ -319,7 +280,7 @@ class SourceControllerTest {
 			.endTime(endTime)
 			.build();
 
-		when(gitHubService.getAllCrews(GITHUB_TOKEN, mockOrganization, mockRepo, mockBranch, startTime, endTime))
+		when(gitHubService.getAllCrews(GITHUB_TOKEN, mockOrganization, mockRepo, mockBranch, startTime, endTime, null))
 			.thenReturn(List.of("test-crew1"));
 
 		mockMvc
@@ -332,7 +293,8 @@ class SourceControllerTest {
 			.andReturn()
 			.getResponse();
 
-		verify(gitHubService).getAllCrews(GITHUB_TOKEN, mockOrganization, mockRepo, mockBranch, startTime, endTime);
+		verify(gitHubService).getAllCrews(GITHUB_TOKEN, mockOrganization, mockRepo, mockBranch, startTime, endTime,
+				null);
 	}
 
 }
