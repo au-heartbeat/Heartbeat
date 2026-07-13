@@ -12,7 +12,7 @@ jobs:
     name: Shellcheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@master
         with:
@@ -21,7 +21,7 @@ jobs:
   fossa-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: FOSSA Check
         run: |
           curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install-latest.sh | bash
@@ -32,7 +32,7 @@ jobs:
     name: Credential Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           ref: ${{ github.head_ref }}
@@ -55,7 +55,7 @@ jobs:
   # security-check:
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - uses: actions/checkout@v4
+  #     - uses: actions/checkout@v7
   #       with:
   #         fetch-depth: 0
   #         ref: ${{ github.head_ref }}
@@ -82,7 +82,7 @@ jobs:
       run:
         working-directory: ./backend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
@@ -111,7 +111,7 @@ jobs:
       run:
         working-directory: ./backend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
@@ -132,21 +132,21 @@ jobs:
   deny-dot-star-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Java .*; check
         shell: bash {0}
         run: ./ops/check.sh dot-star
   deny-px-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: CSS unit `px` check
         shell: bash {0}
         run: ./ops/check.sh px
   deny-css-hex-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: CSS hex check
         shell: bash {0}
         run: ./ops/check.sh hex
@@ -154,7 +154,7 @@ jobs:
   deny-css-rgba-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: CSS rgba check
         shell: bash {0}
         run: ./ops/check.sh rgba
@@ -164,7 +164,7 @@ jobs:
       run:
         working-directory: ./frontend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
@@ -181,7 +181,7 @@ jobs:
       run:
         working-directory: ./frontend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
@@ -219,7 +219,7 @@ jobs:
   frontend-license-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
@@ -232,7 +232,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Check BuildKite status
         env:
           BUILDKITE_TOKEN: ${{ secrets.BUILDKITE_TOKEN }}
@@ -249,7 +249,7 @@ jobs:
   #   runs-on: ubuntu-latest
   #   steps:
   #     - name: Checkout repo
-  #       uses: actions/checkout@v4
+  #       uses: actions/checkout@v7
 
   #     - name: Build and tag
   #       run: |
@@ -302,7 +302,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # - name: Configure AWS credentials
       #   if: ${{ contains(github.event.head_commit.message, '[infra]') }}
@@ -334,7 +334,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -374,7 +374,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -411,7 +411,7 @@ jobs:
       - build-frontend
     steps:
       - name: Checkout repo
-        # uses: actions/checkout@v4
+        # uses: actions/checkout@v7
         run: echo "This is an empty step"
       # - name: Update docker-compose.yaml
       #   run: |
@@ -456,7 +456,7 @@ jobs:
       - deploy-e2e
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Check e2e deployment
         env:
           BUILDKITE_TOKEN: ${{ secrets.BUILDKITE_TOKEN }}
@@ -469,7 +469,7 @@ jobs:
       - buildkite-check
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install
         run: |
           npm install -g pnpm
@@ -499,7 +499,7 @@ jobs:
       - buildkite-check
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install
         run: |
           npm install -g pnpm
@@ -529,7 +529,7 @@ jobs:
       - buildkite-check
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install
         run: |
           npm install -g pnpm
@@ -560,7 +560,7 @@ jobs:
       - buildkite-check
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install
         run: |
           npm install -g pnpm
@@ -591,7 +591,7 @@ jobs:
       - buildkite-check
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install
         run: |
           npm install -g pnpm
@@ -623,7 +623,7 @@ jobs:
       - e2e-google-chrome
     steps:
       - name: Checkout repo
-        # uses: actions/checkout@v4
+        # uses: actions/checkout@v7
         run: echo "This is an empty step"
       # - name: Update docker-compose.yaml
       #   run: |
