@@ -107,7 +107,7 @@ importers:
         version: 29.5.12
       '@types/lodash':
         specifier: ^4.17.0
-        version: 4.17.0
+        version: 4.17.24
       '@types/lodash.camelcase':
         specifier: ^4.3.9
         version: 4.3.9
@@ -1825,8 +1825,8 @@ packages:
   '@types/lodash.camelcase@4.3.9':
     resolution: {integrity: sha512-ys9/hGBfsKxzmFI8hckII40V0ASQ83UM2pxfQRghHAwekhH4/jWtjz/3/9YDy7ZpUd/H0k2STSqmPR28dnj7Zg==}
 
-  '@types/lodash@4.17.0':
-    resolution: {integrity: sha512-t7dhREVv6dbNj0q17X12j7yDG4bD/DHYX7o5/DbDxobP0HnGPgpRz2Ej77aL7TZT3DSw13fqUTj8J4mMnqa7WA==}
+  '@types/lodash@4.17.24':
+    resolution: {integrity: sha512-gIW7lQLZbue7lRSWEFql49QJJWThrTFFeIMJdp3eH4tKoxm1OvEPg02rm4wCCSHS0cL3/Fizimb35b7k8atwsQ==}
 
   '@types/mute-stream@0.0.4':
     resolution: {integrity: sha512-CPM9nzrCPPJHQNA9keH9CVkVI+WR5kMa+7XEs5jcGQ0VoAGnLv242w8lIVgwAEfmE4oufJRaTc9PNLQl0ioAow==}
@@ -6808,9 +6808,9 @@ snapshots:
 
   '@types/lodash.camelcase@4.3.9':
     dependencies:
-      '@types/lodash': 4.17.0
+      '@types/lodash': 4.17.24
 
-  '@types/lodash@4.17.0': {}
+  '@types/lodash@4.17.24': {}
 
   '@types/mute-stream@0.0.4':
     dependencies:
