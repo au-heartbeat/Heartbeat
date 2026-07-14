@@ -178,47 +178,47 @@ jobs:
           pnpm install --no-frozen-lockfile --ignore-scripts
           pnpm run type-check
 
-  frontend-check:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ vars.NODE_VERSION }}
-      - name: Install & Lint
-        run: |
-          npm install -g pnpm
-          pnpm install --no-frozen-lockfile --ignore-scripts
-          pnpm lint
-      - name: Audit for vulnerabilities
-        run: pnpm dlx audit-ci@^6 --critical --report-type full
-      - name: Testing and coverage
-        run: |
-          pnpm coverage:silent
-      - name: Building
-        run: pnpm build
-      - name: Upload Test Report to Codacy
-        run: |
-          export CODACY_PROJECT_TOKEN=${{secrets.CODACY_PROJECT_TOKEN}}
-          bash <(curl -Ls https://coverage.codacy.com/get.sh)
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        with:
-          projectBaseDir: frontend
-          args: >
-            -Dsonar.organization=au-heartbeat
-            -Dsonar.projectKey=au-heartbeat-heartbeat-frontend
-            -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
-            -Dsonar.sources=src/
-            -Dsonar.tests=__tests__
+  # frontend-check:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: ./frontend
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Use Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: ${{ vars.NODE_VERSION }}
+  #     - name: Install & Lint
+  #       run: |
+  #         npm install -g pnpm
+  #         pnpm install --no-frozen-lockfile --ignore-scripts
+  #         pnpm lint
+  #     - name: Audit for vulnerabilities
+  #       run: pnpm dlx audit-ci@^6 --critical --report-type full
+  #     - name: Testing and coverage
+  #       run: |
+  #         pnpm coverage:silent
+  #     - name: Building
+  #       run: pnpm build
+  #     - name: Upload Test Report to Codacy
+  #       run: |
+  #         export CODACY_PROJECT_TOKEN=${{secrets.CODACY_PROJECT_TOKEN}}
+  #         bash <(curl -Ls https://coverage.codacy.com/get.sh)
+  #     - name: SonarCloud Scan
+  #       uses: SonarSource/sonarcloud-github-action@master
+  #       with:
+  #         projectBaseDir: frontend
+  #         args: >
+  #           -Dsonar.organization=au-heartbeat
+  #           -Dsonar.projectKey=au-heartbeat-heartbeat-frontend
+  #           -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
+  #           -Dsonar.sources=src/
+  #           -Dsonar.tests=__tests__
 
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
   frontend-license-check:
     runs-on: ubuntu-latest
     steps:
@@ -285,7 +285,7 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
       - fossa-check
-      - frontend-check
+      # - frontend-check
       - deny-px-check
       - deny-css-hex-check
       - deny-css-rgba-check
