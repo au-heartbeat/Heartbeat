@@ -13,9 +13,9 @@ import {
 import { sourceControlDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
 import { AxiosRequestErrorCode, SourceControlTypes } from '@src/constants/resources';
+import { render, screen, act, waitFor, within } from '@testing-library/react';
 import { sourceControlSchema } from '@src/containers/ConfigStep/Form/schema';
 import { SourceControl } from '@src/containers/ConfigStep/SourceControl';
-import { render, screen, act, waitFor } from '@testing-library/react';
 import { setupStore } from '../../utils/setupStoreUtil';
 import { FormProvider } from '@test/utils/FormProvider';
 import userEvent from '@testing-library/user-event';
@@ -253,5 +253,29 @@ describe('SourceControl', () => {
     const verifyButton = await screen.findByRole('button', { name: /verify/i });
 
     expect(verifyButton).toBeEnabled();
+  });
+
+  it('should show GitHub host field when sourceControl type is GitHubEnterprise', async () => {
+    setup();
+
+    await userEvent.click(screen.getByRole('combobox'));
+    const listBox = await screen.findByRole('listbox');
+    await userEvent.click(within(listBox).getByRole('option', { name: SourceControlTypes.GitHubEnterprise }));
+
+    expect(screen.getByTestId('sourceControlHostField')).toBeInTheDocument();
+    expect(screen.getByLabelText('GitHub host *')).toBeInTheDocument();
+  });
+
+  it('should update sourceControl with site value when typing in GitHub host field', async () => {
+    setup();
+
+    await userEvent.click(screen.getByRole('combobox'));
+    const listBox = await screen.findByRole('listbox');
+    await userEvent.click(within(listBox).getByRole('option', { name: SourceControlTypes.GitHubEnterprise }));
+
+    const hostInput = screen.getByTestId('sourceControlHostField').querySelector('input') as HTMLInputElement;
+    await userEvent.type(hostInput, 'https://github.internal.com');
+
+    expect(hostInput.value).toBe('https://github.internal.com');
   });
 });
