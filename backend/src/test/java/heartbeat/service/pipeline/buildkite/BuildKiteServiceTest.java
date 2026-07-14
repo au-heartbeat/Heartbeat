@@ -522,6 +522,31 @@ class BuildKiteServiceTest {
 	}
 
 	@Test
+	void shouldFilterOutPipelineWithNullStepsWhenGetBuildKiteInfo() throws IOException {
+		TokenParam tokenParam = TokenParam.builder().token(MOCK_TOKEN).build();
+		ObjectMapper mapper = new ObjectMapper();
+		List<BuildKitePipelineDTO> pipelineDTOS = mapper.readValue(
+				new File("src/test/java/heartbeat/controller/pipeline/buildKitePipelineInfoData.json"),
+				new TypeReference<>() {
+				});
+		List<BuildKitePipelineDTO> mixedPipelines = new ArrayList<>(pipelineDTOS);
+		mixedPipelines
+			.add(BuildKitePipelineDTO.builder().name("no-steps-pipeline").slug("no-steps").steps(null).build());
+		var pipelineDTOResponse = PageBuildKitePipelineInfoDTO.builder()
+			.firstPageInfo(mixedPipelines)
+			.totalPage(1)
+			.build();
+		when(buildKiteFeignClient.getBuildKiteOrganizationsInfo(any()))
+			.thenReturn(List.of(BuildKiteOrganizationsInfo.builder().name(TEST_ORG_NAME).slug(TEST_ORG_ID).build()));
+		when(cachePageService.getPipelineInfoList(TEST_ORG_ID, "Bearer mock_token", "1", "100"))
+			.thenReturn(pipelineDTOResponse);
+
+		BuildKiteResponseDTO buildKiteResponseDTO = buildKiteService.getBuildKiteInfo(tokenParam);
+
+		assertThat(buildKiteResponseDTO.getPipelineList()).hasSize(1);
+	}
+
+	@Test
 	void shouldReturnBuildKiteResponseGivenNonePipelineInfoWhenGetBuildKiteInfo() {
 		TokenParam tokenParam = TokenParam.builder().token(MOCK_TOKEN).build();
 		var pipelineDTOResponse = PageBuildKitePipelineInfoDTO.builder().firstPageInfo(null).totalPage(1).build();
