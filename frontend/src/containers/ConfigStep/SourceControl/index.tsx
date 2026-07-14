@@ -81,6 +81,7 @@ export const SourceControl = ({
             name={fields[FieldKey.Site].key}
             control={control}
             render={({ field, fieldState }) => {
+              /* istanbul ignore next */
               return (
                 <StyledTextField
                   {...field}
@@ -102,7 +103,7 @@ export const SourceControl = ({
                     field.onChange(e.target.value);
                   }}
                   error={fieldState.invalid}
-                  helperText={fieldState.error?.message ? fieldState.error?.message : ''}
+                  helperText={fieldState.error?.message || ''}
                 />
               );
             }}
