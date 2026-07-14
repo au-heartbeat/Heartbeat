@@ -1,7 +1,7 @@
 import { sourceControlSchema } from '@src/containers/ConfigStep/Form/schema';
 import { SourceControlTypes } from '@src/constants/resources';
 
-const GitHub_MOCK_TOKEN = 'GITHUB TOKEN';
+const GitHub_MOCK_TOKEN = 'ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 describe('sourceControlSchema', () => {
   it('should require site when type is GitHubEnterprise', async () => {
     const result = await sourceControlSchema
