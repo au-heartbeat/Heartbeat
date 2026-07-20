@@ -126,7 +126,7 @@ jobs:
         uses: gradle/gradle-build-action@v3.5.0
       - name: License check
         run: ./gradlew clean checkLicense
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: ${{ failure() }}
         with:
           name: backend-license-report
@@ -487,7 +487,7 @@ jobs:
   #         E2E_PROJECT: "Google Chrome"
   #       shell: bash {0}
   #       run: ./ops/check.sh e2e
-  #     - uses: actions/upload-artifact@v4
+  #     - uses: actions/upload-artifact@v7
   #       if: always()
   #       with:
   #         name: playwright-report-google-chrome
@@ -517,7 +517,7 @@ jobs:
   #         E2E_PROJECT: ${{ env.E2E_PLATFORM }}
   #       shell: bash {0}
   #       run: ./ops/check.sh e2e
-  #     - uses: actions/upload-artifact@v4
+  #     - uses: actions/upload-artifact@v7
   #       if: always()
   #       with:
   #         name: playwright-report-${{ env.E2E_PLATFORM }}
@@ -548,7 +548,7 @@ jobs:
   #         E2E_PROJECT: ${{ env.E2E_PLATFORM }}
   #       shell: bash {0}
   #       run: ./ops/check.sh e2e
-  #     - uses: actions/upload-artifact@v4
+  #     - uses: actions/upload-artifact@v7
   #       if: always()
   #       with:
   #         name: playwright-report-${{ env.E2E_PLATFORM }}
@@ -579,7 +579,7 @@ jobs:
   #         E2E_PROJECT: ${{ env.E2E_PLATFORM }}
   #       shell: bash {0}
   #       run: ./ops/check.sh e2e
-  #     - uses: actions/upload-artifact@v4
+  #     - uses: actions/upload-artifact@v7
   #       if: always()
   #       with:
   #         name: playwright-report-${{ env.E2E_PLATFORM }}
@@ -609,7 +609,7 @@ jobs:
   #         E2E_PROJECT: ${{ env.E2E_PLATFORM }}
   #       shell: bash {0}
   #       run: ./ops/check.sh e2e
-  #     - uses: actions/upload-artifact@v4
+  #     - uses: actions/upload-artifact@v7
   #       if: always()
   #       with:
   #         name: playwright-report-${{ env.E2E_PLATFORM }}
